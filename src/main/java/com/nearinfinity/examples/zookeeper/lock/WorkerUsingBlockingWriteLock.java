@@ -7,7 +7,7 @@ import org.apache.zookeeper.ZooKeeper;
 
 import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
 
-public class WorkerUsingSyncLock {
+public class WorkerUsingBlockingWriteLock {
 
     private static Random random = new Random(System.currentTimeMillis());
 
@@ -18,7 +18,7 @@ public class WorkerUsingSyncLock {
 
         ConnectionHelper connectionHelper = ConnectionHelper.instance;
         ZooKeeper zooKeeper = connectionHelper.connect(hosts);
-        SynchronousWriteLock lock = new SynchronousWriteLock(myName, zooKeeper, path, ZooDefs.Ids.OPEN_ACL_UNSAFE);
+        BlockingWriteLock lock = new BlockingWriteLock(myName, zooKeeper, path, ZooDefs.Ids.OPEN_ACL_UNSAFE);
 
         System.out.printf("%s is attempting to obtain lock on %s...\n", myName, path);
 

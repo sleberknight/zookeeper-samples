@@ -9,12 +9,12 @@ import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.recipes.lock.LockListener;
 import org.apache.zookeeper.recipes.lock.WriteLock;
 
-public class SynchronousWriteLock {
+public class BlockingWriteLock {
 
     private WriteLock writeLock;
     private static CountDownLatch lockAcquiredSignal = new CountDownLatch(1);
 
-    public SynchronousWriteLock(String name, ZooKeeper zookeeper, String dir, List<ACL> acl) {
+    public BlockingWriteLock(String name, ZooKeeper zookeeper, String dir, List<ACL> acl) {
         this.writeLock = new WriteLock(zookeeper, dir, acl, new SyncLockListener(name));
     }
 
