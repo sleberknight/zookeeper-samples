@@ -11,14 +11,19 @@ import org.apache.zookeeper.recipes.lock.WriteLock;
 
 public class BlockingWriteLock {
 
+    private String name;
+    private String path;
     private WriteLock writeLock;
     private static CountDownLatch lockAcquiredSignal = new CountDownLatch(1);
 
-    public BlockingWriteLock(String name, ZooKeeper zookeeper, String dir, List<ACL> acl) {
-        this.writeLock = new WriteLock(zookeeper, dir, acl, new SyncLockListener(name));
+    public BlockingWriteLock(String name, ZooKeeper zookeeper, String path, List<ACL> acl) {
+        this.name = name;
+        this.path = path;
+        this.writeLock = new WriteLock(zookeeper, path, acl, new SyncLockListener());
     }
 
     public void lock() throws InterruptedException, KeeperException {
+        System.out.printf("%s requesting lock on %s...", name, path);
         writeLock.lock();
         lockAcquiredSignal.await();
     }
@@ -27,23 +32,17 @@ public class BlockingWriteLock {
         writeLock.unlock();
     }
 
-    static class SyncLockListener implements LockListener {
-
-        private String name;
-
-        SyncLockListener(String name) {
-            this.name = name;
-        }
+    class SyncLockListener implements LockListener {
 
         @Override
         public void lockAcquired() {
-            System.out.printf("Lock acquired by %s\n", name);
+            System.out.printf("Lock acquired by %s on %s\n", name, path);
             lockAcquiredSignal.countDown();
         }
 
         @Override
         public void lockReleased() {
-            System.out.printf("Lock released by %s\n", name);
+            System.out.printf("Lock released by %s on %s\n", name, path);
         }
     }
 }
