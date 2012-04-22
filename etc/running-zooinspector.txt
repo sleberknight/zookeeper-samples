@@ -1,0 +1,7 @@
+To run ZooInspector:
+
+1. Go to /usr/local/zookeeper/contrib/ZooInspector
+
+2. Run:
+
+  java -cp zookeeper-3.3.2-ZooInspector.jar:lib/*:b:/usr/local/zookeeper/zookeeper-3.3.2.jar:../../lib/log4j-1.2.15.jar org.apache.zookeeper.inspector.ZooInspector
