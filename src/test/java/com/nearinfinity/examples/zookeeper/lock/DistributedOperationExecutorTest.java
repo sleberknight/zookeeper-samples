@@ -15,14 +15,15 @@ import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
 import com.nearinfinity.examples.zookeeper.util.EmbeddedZooKeeperServer;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-public class BlockingWriteLockTest {
+public class DistributedOperationExecutorTest {
 
     private static EmbeddedZooKeeperServer embeddedServer;
     private ZooKeeper zooKeeper;
     private String testLockPath;
-    private BlockingWriteLock writeLock;
+    private DistributedOperationExecutor executor;
 
     private static final int ZK_PORT = 53181;
     private static final String ZK_CONNECTION_STRING = "localhost:" + ZK_PORT;
@@ -42,7 +43,7 @@ public class BlockingWriteLockTest {
     public void setUp() throws IOException, InterruptedException {
         zooKeeper = new ConnectionHelper().connect(ZK_CONNECTION_STRING);
         testLockPath = "/test-writeLock-" + System.currentTimeMillis();
-        writeLock = new BlockingWriteLock("Test Lock", zooKeeper, testLockPath);
+        executor = new DistributedOperationExecutor(zooKeeper);
     }
 
     @After
@@ -55,21 +56,26 @@ public class BlockingWriteLockTest {
     }
 
     @Test
-    public void testLock() throws InterruptedException, KeeperException {
-        writeLock.lock();
-        assertNumberOfChildren(zooKeeper, testLockPath, 1);
-    }
-
-    @Test
-    public void testUnlock() throws InterruptedException, KeeperException {
-        writeLock.lock();
-        writeLock.unlock();
+    public void testWithLock() throws InterruptedException, KeeperException {
+        assertThat(zooKeeper.exists(testLockPath, false), is(nullValue()));
+        executor.withLock("Test Lock", testLockPath, new DistributedOperation() {
+            @Override
+            public Object execute() throws DistributedOperationException {
+                assertNumberOfChildren(zooKeeper, testLockPath, 1);
+                return null;
+            }
+        });
         assertNumberOfChildren(zooKeeper, testLockPath, 0);
     }
 
-    private void assertNumberOfChildren(ZooKeeper zk, String path, int expectedNumber)
-            throws InterruptedException, KeeperException {
-        List<String> children = zk.getChildren(path, false);
+    private void assertNumberOfChildren(ZooKeeper zk, String path, int expectedNumber) {
+        List<String> children;
+        try {
+            children = zk.getChildren(path, false);
+        }
+        catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
         assertThat(children.size(), is(expectedNumber));
     }
 }
