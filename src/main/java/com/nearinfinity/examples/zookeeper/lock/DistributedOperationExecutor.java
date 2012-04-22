@@ -17,9 +17,13 @@ public class DistributedOperationExecutor {
     public void withLock(String name, String lockPath, List<ACL> acl, DistributedOperation op)
             throws InterruptedException, KeeperException {
         BlockingWriteLock lock = new BlockingWriteLock(name, zk, lockPath, acl);
-        lock.lock();
-        op.execute();
-        lock.unlock();
+        try {
+            lock.lock();
+            op.execute();
+        }
+        finally {
+            lock.unlock();  // Technically don't need in a finally, but maybe more semantically correct?
+        }
     }
 
 }
