@@ -30,7 +30,7 @@ public class WorkerUsingSyncLock {
 
         System.out.printf("%s is done doing work, releasing lock on %s\n", myName, path);
 
-        lock.unlock();
+        lock.unlock();  // Does not need to be in a finally. Why?
     }
 
     private static void doSomeWork(String name) {

@@ -34,7 +34,7 @@ public class Worker {
         workDoneSignal.await();
 
         System.out.printf("Work done signal was sent. %s is unlocking the lock\n", myName);
-        lock.unlock();
+        lock.unlock();  // Does not need to be in a finally. Why?
     }
 
     private static void doSomeWork(String name) {
