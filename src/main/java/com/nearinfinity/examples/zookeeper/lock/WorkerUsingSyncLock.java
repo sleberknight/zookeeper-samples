@@ -28,7 +28,7 @@ public class WorkerUsingSyncLock {
 
         doSomeWork(myName);
 
-        System.out.printf("%s is done doing work, releasing lock on %s", myName, path);
+        System.out.printf("%s is done doing work, releasing lock on %s\n", myName, path);
 
         lock.unlock();
     }
