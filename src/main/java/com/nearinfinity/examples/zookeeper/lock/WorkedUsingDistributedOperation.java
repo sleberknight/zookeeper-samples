@@ -18,7 +18,7 @@ public class WorkedUsingDistributedOperation {
         final String path = args[1];
         final String myName = args[2];
 
-        ConnectionHelper connectionHelper = ConnectionHelper.instance;
+        ConnectionHelper connectionHelper = new ConnectionHelper();
         ZooKeeper zooKeeper = connectionHelper.connect(hosts);
 
         new DistributedOperationExecutor(zooKeeper).withLock(myName, path, ZooDefs.Ids.OPEN_ACL_UNSAFE,

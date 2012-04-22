@@ -26,7 +26,7 @@ public class LockWatcher implements Watcher {
         String hosts = args[0];
         String lockPath = args[1];
 
-        ConnectionHelper connectionHelper = ConnectionHelper.instance;
+        ConnectionHelper connectionHelper = new ConnectionHelper();
         ZooKeeper zk = connectionHelper.connect(hosts);
         LockWatcher watcher = new LockWatcher(zk, lockPath);
         watcher.watch();

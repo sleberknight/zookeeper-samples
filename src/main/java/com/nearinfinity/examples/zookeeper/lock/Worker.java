@@ -21,7 +21,7 @@ public class Worker {
         String path = args[1];
         String myName = args[2];
 
-        ConnectionHelper connectionHelper = ConnectionHelper.instance;
+        ConnectionHelper connectionHelper = new ConnectionHelper();
         ZooKeeper zooKeeper = connectionHelper.connect(hosts);
         WorkerLockListener lockListener = new WorkerLockListener(myName);
         WriteLock lock = new WriteLock(zooKeeper, path, ZooDefs.Ids.OPEN_ACL_UNSAFE, lockListener);

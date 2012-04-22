@@ -9,15 +9,9 @@ import org.apache.zookeeper.ZooKeeper;
 
 public class ConnectionHelper {
 
-    public static final int SESSION_TIMEOUT = 5000;
+    public static final int DEFAULT_SESSION_TIMEOUT = 5000;
 
     private CountDownLatch connectedSignal = new CountDownLatch(1);
-
-    public static final ConnectionHelper instance;
-
-    static {
-        instance = new ConnectionHelper();
-    }
 
     public ZooKeeper connect(String hosts, int sessionTimeout) throws IOException, InterruptedException {
         ZooKeeper zk = new ZooKeeper(hosts, sessionTimeout, new Watcher() {
@@ -33,6 +27,6 @@ public class ConnectionHelper {
     }
 
     public ZooKeeper connect(String hosts) throws IOException, InterruptedException {
-        return connect(hosts, SESSION_TIMEOUT);
+        return connect(hosts, DEFAULT_SESSION_TIMEOUT);
     }
 }

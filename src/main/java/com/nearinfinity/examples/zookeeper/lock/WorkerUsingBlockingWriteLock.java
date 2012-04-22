@@ -16,7 +16,7 @@ public class WorkerUsingBlockingWriteLock {
         String path = args[1];
         String myName = args[2];
 
-        ConnectionHelper connectionHelper = ConnectionHelper.instance;
+        ConnectionHelper connectionHelper = new ConnectionHelper();
         ZooKeeper zooKeeper = connectionHelper.connect(hosts);
         BlockingWriteLock lock = new BlockingWriteLock(myName, zooKeeper, path, ZooDefs.Ids.OPEN_ACL_UNSAFE);
 
