@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.recipes.lock.LockListener;
@@ -15,6 +16,12 @@ public class BlockingWriteLock {
     private String path;
     private WriteLock writeLock;
     private static CountDownLatch lockAcquiredSignal = new CountDownLatch(1);
+
+    public static List<ACL> DEFAULT_ACL = ZooDefs.Ids.OPEN_ACL_UNSAFE;
+
+    public BlockingWriteLock(String name, ZooKeeper zookeeper, String path) {
+        this(name, zookeeper, path, DEFAULT_ACL);
+    }
 
     public BlockingWriteLock(String name, ZooKeeper zookeeper, String path, List<ACL> acl) {
         this.name = name;
