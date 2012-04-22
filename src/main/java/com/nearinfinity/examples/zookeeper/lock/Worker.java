@@ -48,8 +48,6 @@ public class Worker {
             System.out.printf("Oops. Interrupted.\n");
             Thread.currentThread().interrupt();
         }
-        System.out.printf("%s is now done doing work\n", name);
-        workDoneSignal.countDown();
     }
 
     static class WorkerLockListener implements LockListener {
@@ -64,6 +62,8 @@ public class Worker {
         public void lockAcquired() {
             System.out.printf("Lock acquired by %s\n", workerName);
             doSomeWork(workerName);
+            System.out.printf("%s is now done doing work\n", workerName);
+            workDoneSignal.countDown();
         }
 
         @Override
