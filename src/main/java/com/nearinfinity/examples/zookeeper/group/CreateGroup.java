@@ -10,6 +10,7 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 
+// TODO Change to use ConnectionWatcher??? Or change all ConnectionWatcher uses to ConnectionHelper???
 public class CreateGroup implements Watcher {
 
     private static final int SESSION_TIMEOUT = 5000;

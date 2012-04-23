@@ -13,6 +13,7 @@ import org.apache.zookeeper.ZooKeeper;
 
 import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
 
+// TODO Make this generic, i.e. a znode-watcher (will need to change lock-watcher.sh)
 public class LockWatcher implements Watcher {
 
     private ZooKeeper zk;
