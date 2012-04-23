@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
+import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 
 import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
@@ -28,8 +30,20 @@ public class LockWatcher implements Watcher {
 
         ConnectionHelper connectionHelper = new ConnectionHelper();
         ZooKeeper zk = connectionHelper.connect(hosts);
+        ensureLockPathExists(zk, lockPath);
+
         LockWatcher watcher = new LockWatcher(zk, lockPath);
         watcher.watch();
+    }
+
+    private static void ensureLockPathExists(ZooKeeper zk, String lockPath)
+            throws InterruptedException, KeeperException {
+
+        if (zk.exists(lockPath, false) == null) {
+            String znodePath =
+                    zk.create(lockPath, null /* data */, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+            System.out.printf("Created lock znode having path %s\n", znodePath);
+        }
     }
 
     private void watch() throws InterruptedException, KeeperException {
