@@ -23,22 +23,28 @@ public class ConnectionHelperTest {
 
     private static final int ZK_PORT = 53181;
     private static final String ZK_CONNECTION_STRING = "localhost:" + ZK_PORT;
+    private static File dataDirectory;
 
     @BeforeClass
     public static void beforeAll() throws IOException, InterruptedException {
         String dataDirectoryName = "target/zookeeper-data";
-        File dataDirectory = new File(dataDirectoryName);
-        if (dataDirectory.exists()) {
-            FileUtils.deleteDirectory(dataDirectory);
-        }
+        dataDirectory = new File(dataDirectoryName);
+        deleteDataDirectoryIfExists();
 
         embeddedServer = new EmbeddedZooKeeperServer(ZK_PORT, dataDirectoryName, 2000);
         embeddedServer.start();
     }
 
     @AfterClass
-    public static void afterAll() {
+    public static void afterAll() throws IOException {
         embeddedServer.shutdown();
+        deleteDataDirectoryIfExists();
+    }
+
+    private static void deleteDataDirectoryIfExists() throws IOException {
+        if (dataDirectory.exists()) {
+            FileUtils.deleteDirectory(dataDirectory);
+        }
     }
 
     @Before
