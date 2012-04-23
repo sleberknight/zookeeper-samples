@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Random;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.zookeeper.server.NIOServerCnxn;
 import org.apache.zookeeper.server.ZooKeeperServer;
 import org.apache.zookeeper.server.persistence.FileTxnSnapLog;
@@ -73,7 +74,12 @@ public final class EmbeddedZooKeeperServer {
     private void removeDataDirectoryIfNecessary(String dataDirectoryName, boolean manageDataDir) {
         if (manageDataDir) {
             File dataDir = new File(dataDirectoryName);
-            dataDir.deleteOnExit();  // TODO Why won't this (or normal delete() either) remove the directory on disk?
+            try {
+                FileUtils.deleteDirectory(dataDir);
+            }
+            catch (IOException e) {
+                System.err.println(String.format("dataDir %s could not be removed", dataDirectoryName));
+            }
         }
     }
 

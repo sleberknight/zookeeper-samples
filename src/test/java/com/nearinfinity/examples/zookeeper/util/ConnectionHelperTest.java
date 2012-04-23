@@ -20,14 +20,13 @@ public class ConnectionHelperTest {
 
     private static EmbeddedZooKeeperServer embeddedServer;
 
-    private static String dataDirectoryName = "target/zookeeper-data";
-    private static File dataDirectory;
     private static final int ZK_PORT = 53181;
     private static final String ZK_CONNECTION_STRING = "localhost:" + ZK_PORT;
 
     @BeforeClass
     public static void beforeAll() throws IOException, InterruptedException {
-        dataDirectory = new File(dataDirectoryName);
+        String dataDirectoryName = "target/zookeeper-data";
+        File dataDirectory = new File(dataDirectoryName);
         if (dataDirectory.exists()) {
             dataDirectory.delete();
         }
