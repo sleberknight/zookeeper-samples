@@ -3,6 +3,7 @@ package com.nearinfinity.examples.zookeeper.util;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.zookeeper.ZooKeeper;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -28,7 +29,7 @@ public class ConnectionHelperTest {
         String dataDirectoryName = "target/zookeeper-data";
         File dataDirectory = new File(dataDirectoryName);
         if (dataDirectory.exists()) {
-            dataDirectory.delete();
+            FileUtils.deleteDirectory(dataDirectory);
         }
 
         embeddedServer = new EmbeddedZooKeeperServer(ZK_PORT, dataDirectoryName, 2000);
