@@ -30,7 +30,7 @@ public class BlockingWriteLock {
     }
 
     public void lock() throws InterruptedException, KeeperException {
-        System.out.printf("%s requesting lock on %s...", name, path);
+        System.out.printf("%s requesting lock on %s...\n", name, path);
         writeLock.lock();
         lockAcquiredSignal.await();
     }
