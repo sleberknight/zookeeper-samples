@@ -20,7 +20,6 @@ public class DeleteGroup extends ConnectionWatcher {
         }
         catch (KeeperException.NoNodeException e) {
             System.out.printf("Group %s does not exist\n", groupName);
-            System.exit(1);
         }
     }
 
