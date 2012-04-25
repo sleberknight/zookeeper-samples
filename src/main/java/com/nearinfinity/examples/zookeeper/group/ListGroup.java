@@ -15,7 +15,7 @@ public class ListGroup extends ConnectionWatcher {
             List<String> children = zk.getChildren(path, false);
             if (children.isEmpty()) {
                 System.out.printf("No members in group %s\n", groupName);
-                System.exit(1);
+                return;
             }
             for (String child : children) {
                 System.out.println(child);
