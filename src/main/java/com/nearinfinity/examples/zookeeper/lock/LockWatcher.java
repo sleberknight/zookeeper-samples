@@ -19,37 +19,28 @@ public class LockWatcher implements Watcher {
     private String lockPath;
     private Semaphore semaphore = new Semaphore(1);
 
-    public LockWatcher(ZooKeeper zk, String lockPath) {
-        this.zk = zk;
-        this.lockPath = lockPath;
-    }
-
     public static void main(String[] args) throws IOException, InterruptedException, KeeperException {
         String hosts = args[0];
         String lockPath = args[1];
 
         ConnectionHelper connectionHelper = new ConnectionHelper();
         ZooKeeper zk = connectionHelper.connect(hosts);
-        ensureLockPathExists(zk, lockPath);
 
         LockWatcher watcher = new LockWatcher(zk, lockPath);
         watcher.watch();
     }
 
-    private static void ensureLockPathExists(ZooKeeper zk, String lockPath)
-            throws InterruptedException, KeeperException {
-
-        if (zk.exists(lockPath, false) == null) {
-            String znodePath =
-                    zk.create(lockPath, null /* data */, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-            System.out.printf("Created lock znode having path %s\n", znodePath);
-        }
+    public LockWatcher(ZooKeeper zk, String lockPath) throws InterruptedException, KeeperException {
+        this.zk = zk;
+        this.lockPath = lockPath;
+        ensureLockPathExists(zk, lockPath);
     }
 
-    private void watch() throws InterruptedException, KeeperException {
+    public void watch() throws InterruptedException, KeeperException {
         System.out.println("Acquire initial semaphore");
         semaphore.acquire();
 
+        // noinspection InfiniteLoopStatement
         while (true) {
             System.out.println("Getting children");
             List<String> children = zk.getChildren(lockPath, this);
@@ -63,6 +54,16 @@ public class LockWatcher implements Watcher {
         if (event.getType() == Event.EventType.NodeChildrenChanged) {
             System.out.printf("Received %s event\n", Event.EventType.NodeChildrenChanged.name());
             semaphore.release();
+        }
+    }
+
+    private void ensureLockPathExists(ZooKeeper zk, String lockPath)
+            throws InterruptedException, KeeperException {
+
+        if (zk.exists(lockPath, false) == null) {
+            String znodePath =
+                    zk.create(lockPath, null /* data */, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+            System.out.printf("Created lock znode having path %s\n", znodePath);
         }
     }
 
