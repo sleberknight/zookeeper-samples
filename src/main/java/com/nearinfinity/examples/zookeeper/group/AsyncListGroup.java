@@ -13,6 +13,8 @@ public class AsyncListGroup extends ConnectionWatcher {
     public void list(final String groupName) throws KeeperException, InterruptedException {
         String path = "/" + groupName;
 
+        // In real code, you would not use the async API the way it's being used here. You would
+        // go off and do other things without blocking like this example does.
         final Semaphore semaphore = new Semaphore(1);
         zk.getChildren(path, false,
                 new AsyncCallback.ChildrenCallback() {
