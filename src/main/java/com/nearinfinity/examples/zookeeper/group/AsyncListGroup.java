@@ -10,30 +10,30 @@ import com.nearinfinity.examples.zookeeper.util.ConnectionWatcher;
 
 public class AsyncListGroup extends ConnectionWatcher {
 
-    private Semaphore semaphore = new Semaphore(1);
-
     public void list(final String groupName) throws KeeperException, InterruptedException {
         String path = "/" + groupName;
 
-        zk.getChildren(path, false, new AsyncCallback.ChildrenCallback() {
-            @Override
-            public void processResult(int rc, String path, Object ctx, List<String> children) {
-                System.out.printf("Called back for path %s with return code %d\n", path, rc);
-                if (children == null) {
-                    System.out.printf("Group %s does not exist\n", groupName);
-                }
-                else {
-                    if (children.isEmpty()) {
-                        System.out.printf("No members in group %s\n", groupName);
-                        return;
+        final Semaphore semaphore = new Semaphore(1);
+        zk.getChildren(path, false,
+                new AsyncCallback.ChildrenCallback() {
+                    @Override
+                    public void processResult(int rc, String path, Object ctx, List<String> children) {
+                        System.out.printf("Called back for path %s with return code %d\n", path, rc);
+                        if (children == null) {
+                            System.out.printf("Group %s does not exist\n", groupName);
+                        }
+                        else {
+                            if (children.isEmpty()) {
+                                System.out.printf("No members in group %s\n", groupName);
+                                return;
+                            }
+                            for (String child : children) {
+                                System.out.println(child);
+                            }
+                        }
+                        semaphore.release();
                     }
-                    for (String child : children) {
-                        System.out.println(child);
-                    }
-                }
-                semaphore.release();
-            }
-        }, null /* optional context object */);
+                }, null /* optional context object */);
         semaphore.acquire();
     }
 
