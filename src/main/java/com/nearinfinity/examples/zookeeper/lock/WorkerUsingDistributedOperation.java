@@ -9,7 +9,7 @@ import org.apache.zookeeper.ZooKeeper;
 
 import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
 
-public class WorkedUsingDistributedOperation {
+public class WorkerUsingDistributedOperation {
 
     private static Random random = new Random(System.currentTimeMillis());
 
