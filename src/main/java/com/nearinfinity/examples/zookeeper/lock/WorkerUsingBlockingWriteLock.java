@@ -30,7 +30,7 @@ public class WorkerUsingBlockingWriteLock {
 
         System.out.printf("%s is done doing work, releasing lock on %s\n", myName, path);
 
-        lock.unlock();  // Does not need to be in a finally. Why?
+        lock.unlock();  // Does not need to be in a finally. Why?  (hint: we're in a main method)
     }
 
     private static void doSomeWork(String name) {
