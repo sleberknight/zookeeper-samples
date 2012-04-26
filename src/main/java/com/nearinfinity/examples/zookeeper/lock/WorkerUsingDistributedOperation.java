@@ -37,7 +37,8 @@ public class WorkerUsingDistributedOperation {
                         }
                         return null;
                     }
-                });
+                }
+        );
     }
 
 }
