@@ -35,7 +35,7 @@ public class DistributedOperationExecutor {
             op.execute();
         }
         finally {
-            lock.unlock();  // Technically don't need in a finally, but maybe more semantically correct?
+            lock.unlock();
         }
     }
 
