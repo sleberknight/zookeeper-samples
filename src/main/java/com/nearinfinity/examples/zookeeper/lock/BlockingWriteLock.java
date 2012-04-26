@@ -15,7 +15,7 @@ public class BlockingWriteLock {
     private String name;
     private String path;
     private WriteLock writeLock;
-    private static CountDownLatch lockAcquiredSignal = new CountDownLatch(1);
+    private CountDownLatch lockAcquiredSignal = new CountDownLatch(1);
 
     public static List<ACL> DEFAULT_ACL = ZooDefs.Ids.OPEN_ACL_UNSAFE;
 
