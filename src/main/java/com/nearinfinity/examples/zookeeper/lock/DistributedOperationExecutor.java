@@ -17,22 +17,22 @@ public class DistributedOperationExecutor {
 
     public static List<ACL> DEFAULT_ACL = ZooDefs.Ids.OPEN_ACL_UNSAFE;
 
-    public void withLock(String name, String lockPath, DistributedOperation op)
+    public Object withLock(String name, String lockPath, DistributedOperation op)
             throws InterruptedException, KeeperException {
-        internalWithLock(name, lockPath, DEFAULT_ACL, op);
+        return internalWithLock(name, lockPath, DEFAULT_ACL, op);
     }
 
-    public void withLock(String name, String lockPath, List<ACL> acl, DistributedOperation op)
+    public Object withLock(String name, String lockPath, List<ACL> acl, DistributedOperation op)
             throws InterruptedException, KeeperException {
-        internalWithLock(name, lockPath, acl, op);
+        return internalWithLock(name, lockPath, acl, op);
     }
 
-    private void internalWithLock(String name, String lockPath, List<ACL> acl, DistributedOperation op)
+    private Object internalWithLock(String name, String lockPath, List<ACL> acl, DistributedOperation op)
             throws InterruptedException, KeeperException {
         BlockingWriteLock lock = new BlockingWriteLock(name, zk, lockPath, acl);
         try {
             lock.lock();
-            op.execute();
+            return op.execute();
         }
         finally {
             lock.unlock();
