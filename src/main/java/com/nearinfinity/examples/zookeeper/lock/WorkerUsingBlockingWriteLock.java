@@ -6,6 +6,7 @@ import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 
 import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
+import com.nearinfinity.examples.zookeeper.util.RandomAmountOfWork;
 
 public class WorkerUsingBlockingWriteLock {
 
@@ -34,7 +35,7 @@ public class WorkerUsingBlockingWriteLock {
     }
 
     private static void doSomeWork(String name) {
-        int seconds = 10 + random.nextInt(10);  // sample work takes 10-20 seconds
+        int seconds = new RandomAmountOfWork().timeItWillTake();
         long workTimeMillis = seconds * 1000;
         System.out.printf("%s is doing some work for %d seconds\n", name, seconds);
         try {
