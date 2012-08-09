@@ -1,7 +1,5 @@
 package com.nearinfinity.examples.zookeeper.lock;
 
-import java.util.Random;
-
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 
@@ -9,8 +7,6 @@ import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
 import com.nearinfinity.examples.zookeeper.util.RandomAmountOfWork;
 
 public class WorkerUsingBlockingWriteLock {
-
-    private static Random random = new Random(System.currentTimeMillis());
 
     public static void main(String[] args) throws Exception {
         String hosts = args[0];
