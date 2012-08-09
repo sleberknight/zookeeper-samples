@@ -1,6 +1,5 @@
 package com.nearinfinity.examples.zookeeper.lock;
 
-import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
 import org.apache.zookeeper.ZooDefs;
@@ -12,8 +11,6 @@ import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
 import com.nearinfinity.examples.zookeeper.util.RandomAmountOfWork;
 
 public class Worker {
-
-    private static Random random = new Random(System.currentTimeMillis());
 
     private static CountDownLatch workDoneSignal = new CountDownLatch(1);
 
