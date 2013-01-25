@@ -4,6 +4,6 @@ To run ZooInspector (assuming you have installed ZK in /usr/local/zookeeper or c
 
 2. Run:
 
-  (if you have a version of ZK different than 3.3.2, then change the first part of the classpath)
+  (if you have a version of ZK different than 3.3.6, then change the first part of the classpath)
 
-  java -cp zookeeper-3.3.2-ZooInspector.jar:lib/*:/usr/local/zookeeper/*:/usr/local/zookeeper/lib/* org.apache.zookeeper.inspector.ZooInspector
+  java -cp zookeeper-3.3.6-ZooInspector.jar:lib/*:/usr/local/zookeeper/*:/usr/local/zookeeper/lib/* org.apache.zookeeper.inspector.ZooInspector
