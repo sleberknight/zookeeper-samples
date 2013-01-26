@@ -1,7 +1,10 @@
 package com.nearinfinity.examples.zookeeper.group;
 
 import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
-import org.apache.zookeeper.*;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.ZooKeeper;
 
 import java.util.Collections;
 import java.util.List;
