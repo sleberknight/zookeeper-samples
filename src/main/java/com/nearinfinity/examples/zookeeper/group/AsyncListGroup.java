@@ -1,21 +1,27 @@
 package com.nearinfinity.examples.zookeeper.group;
 
-import java.util.List;
-import java.util.concurrent.Semaphore;
-
+import com.nearinfinity.examples.zookeeper.util.ConnectionWatcher;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.KeeperException;
 
-import com.nearinfinity.examples.zookeeper.util.ConnectionWatcher;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 public class AsyncListGroup extends ConnectionWatcher {
+
+    public static void main(String[] args) throws Exception {
+        AsyncListGroup asyncListGroup = new AsyncListGroup();
+        asyncListGroup.connect(args[0]);
+        asyncListGroup.list(args[1]);
+        asyncListGroup.close();
+    }
 
     public void list(final String groupName) throws KeeperException, InterruptedException {
         String path = "/" + groupName;
 
         // In real code, you would not use the async API the way it's being used here. You would
         // go off and do other things without blocking like this example does.
-        final Semaphore semaphore = new Semaphore(1);
+        final CountDownLatch latch = new CountDownLatch(1);
         zk.getChildren(path, false,
                 new AsyncCallback.ChildrenCallback() {
                     @Override
@@ -23,8 +29,7 @@ public class AsyncListGroup extends ConnectionWatcher {
                         System.out.printf("Called back for path %s with return code %d\n", path, rc);
                         if (children == null) {
                             System.out.printf("Group %s does not exist\n", groupName);
-                        }
-                        else {
+                        } else {
                             if (children.isEmpty()) {
                                 System.out.printf("No members in group %s\n", groupName);
                                 return;
@@ -33,17 +38,11 @@ public class AsyncListGroup extends ConnectionWatcher {
                                 System.out.println(child);
                             }
                         }
-                        semaphore.release();
+                        latch.countDown();
                     }
                 }, null /* optional context object */);
-        semaphore.acquire();
-    }
-
-    public static void main(String[] args) throws Exception {
-        AsyncListGroup asyncListGroup = new AsyncListGroup();
-        asyncListGroup.connect(args[0]);
-        asyncListGroup.list(args[1]);
-        asyncListGroup.close();
+        System.out.println("Awaiting latch countdown...");
+        latch.await();
     }
 
 }
