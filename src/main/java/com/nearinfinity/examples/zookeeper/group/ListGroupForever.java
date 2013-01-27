@@ -32,7 +32,7 @@ public class ListGroupForever {
         }
     }
 
-    public void list(String groupName) throws KeeperException, InterruptedException {
+    private void list(String groupName) throws KeeperException, InterruptedException {
         String path = "/" + groupName;
 
         List<String> children = zooKeeper.getChildren(path, new Watcher() {
