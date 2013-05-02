@@ -4,19 +4,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
+import com.nearinfinity.examples.zookeeper.util.EmbeddedZooKeeperServer;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
-import com.nearinfinity.examples.zookeeper.util.EmbeddedZooKeeperServer;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -77,6 +78,36 @@ public class DistributedOperationExecutorTest {
     }
 
     @Test
+    public void testWithLockHavingSpecifiedTimeout() throws InterruptedException, KeeperException {
+        assertThat(zooKeeper.exists(testLockPath, false), is(nullValue()));
+        final Object opResult = "success";
+        DistributedOperationResult result = executor.withLock("Test Lock w/Timeout", testLockPath,
+                new DistributedOperation() {
+                    @Override
+                    public Object execute() throws DistributedOperationException {
+                        return opResult;
+                    }
+                }, 10, TimeUnit.SECONDS);
+        assertThat(result.timedOut, is(false));
+        assertThat(result.result, is(opResult));
+    }
+
+    @Test
+    public void testWithLockHavingACLAndHavingSpecifiedTimeout() throws InterruptedException, KeeperException {
+        assertThat(zooKeeper.exists(testLockPath, false), is(nullValue()));
+        final Object opResult = "success";
+        DistributedOperationResult result = executor.withLock("Test Lock w/Timeout", testLockPath, ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                new DistributedOperation() {
+                    @Override
+                    public Object execute() throws DistributedOperationException {
+                        return opResult;
+                    }
+                }, 10, TimeUnit.SECONDS);
+        assertThat(result.timedOut, is(false));
+        assertThat(result.result, is(opResult));
+    }
+
+    @Test
     public void testWithLockForMultipleLocksInDifferentThreads() throws InterruptedException, KeeperException {
         assertThat(zooKeeper.exists(testLockPath, false), is(nullValue()));
         List<TestDistOp> ops = Arrays.asList(
@@ -108,8 +139,7 @@ public class DistributedOperationExecutorTest {
             public void run() {
                 try {
                     executor.withLock(op.name, testLockPath, op);
-                }
-                catch (Exception ex) {
+                } catch (Exception ex) {
                     throw new DistributedOperationException(ex);
                 }
             }
@@ -142,8 +172,7 @@ public class DistributedOperationExecutorTest {
         List<String> children;
         try {
             children = zk.getChildren(path, false);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
         assertThat(children.size(), is(expectedNumber));
