@@ -2,6 +2,7 @@ package com.nearinfinity.examples.zookeeper.lock;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
@@ -33,6 +34,12 @@ public class BlockingWriteLock {
         System.out.printf("%s requesting lock on %s...\n", name, path);
         writeLock.lock();
         lockAcquiredSignal.await();
+    }
+
+    public boolean lock(long timeout, TimeUnit unit) throws InterruptedException, KeeperException {
+        System.out.printf("%s requesting lock on %s with timeout %d %s...\n", name, path, timeout, unit.name());
+        writeLock.lock();
+        return lockAcquiredSignal.await(timeout, unit);
     }
 
     public void unlock() {

@@ -2,7 +2,10 @@ package com.nearinfinity.examples.zookeeper.lock;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
+import com.nearinfinity.examples.zookeeper.util.EmbeddedZooKeeperServer;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooKeeper;
 import org.junit.After;
@@ -10,9 +13,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
-import com.nearinfinity.examples.zookeeper.util.EmbeddedZooKeeperServer;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -58,6 +58,12 @@ public class BlockingWriteLockTest {
     public void testLock() throws InterruptedException, KeeperException {
         writeLock.lock();
         assertNumberOfChildren(zooKeeper, testLockPath, 1);
+    }
+
+    @Test
+    public void testLockWithTimeout() throws InterruptedException, KeeperException {
+        boolean obtainedLock = writeLock.lock(10, TimeUnit.SECONDS);
+        assertThat(obtainedLock, is(true));
     }
 
     @Test
