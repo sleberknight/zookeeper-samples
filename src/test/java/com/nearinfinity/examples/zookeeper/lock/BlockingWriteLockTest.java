@@ -67,6 +67,12 @@ public class BlockingWriteLockTest {
     }
 
     @Test
+    public void testTryLock() throws InterruptedException, KeeperException {
+        boolean obtainedLock = writeLock.tryLock();
+        assertThat(obtainedLock, is(true));
+    }
+
+    @Test
     public void testUnlock() throws InterruptedException, KeeperException {
         writeLock.lock();
         writeLock.unlock();

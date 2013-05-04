@@ -42,6 +42,10 @@ public class BlockingWriteLock {
         return lockAcquiredSignal.await(timeout, unit);
     }
 
+    public boolean tryLock() throws InterruptedException, KeeperException {
+        return lock(1, TimeUnit.SECONDS);
+    }
+
     public void unlock() {
         writeLock.unlock();
     }
