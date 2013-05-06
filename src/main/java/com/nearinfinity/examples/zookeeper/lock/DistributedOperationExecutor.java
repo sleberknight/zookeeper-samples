@@ -18,29 +18,29 @@ public class DistributedOperationExecutor {
 
     public static List<ACL> DEFAULT_ACL = ZooDefs.Ids.OPEN_ACL_UNSAFE;
 
-    public Object withLock(String name, String lockPath, DistributedOperation op)
+    public <T> T withLock(String name, String lockPath, DistributedOperation<T> op)
             throws InterruptedException, KeeperException {
         return withLockInternal(name, lockPath, DEFAULT_ACL, op);
     }
 
-    public DistributedOperationResult withLock(String name, String lockPath, DistributedOperation op,
+    public <T> DistributedOperationResult<T> withLock(String name, String lockPath, DistributedOperation<T> op,
                                                long timeout, TimeUnit unit)
             throws InterruptedException, KeeperException {
         return withLockInternal(name, lockPath, DEFAULT_ACL, op, timeout, unit);
     }
 
-    public Object withLock(String name, String lockPath, List<ACL> acl, DistributedOperation op)
+    public <T> T withLock(String name, String lockPath, List<ACL> acl, DistributedOperation<T> op)
             throws InterruptedException, KeeperException {
         return withLockInternal(name, lockPath, acl, op);
     }
 
-    public DistributedOperationResult withLock(String name, String lockPath, List<ACL> acl, DistributedOperation op,
+    public <T> DistributedOperationResult<T> withLock(String name, String lockPath, List<ACL> acl, DistributedOperation<T> op,
                                                long timeout, TimeUnit unit)
             throws InterruptedException, KeeperException {
         return withLockInternal(name, lockPath, acl, op, timeout, unit);
     }
 
-    private Object withLockInternal(String name, String lockPath, List<ACL> acl, DistributedOperation op)
+    private <T> T withLockInternal(String name, String lockPath, List<ACL> acl, DistributedOperation<T> op)
             throws InterruptedException, KeeperException {
         BlockingWriteLock lock = new BlockingWriteLock(name, zk, lockPath, acl);
         try {
@@ -51,14 +51,14 @@ public class DistributedOperationExecutor {
         }
     }
 
-    private DistributedOperationResult withLockInternal(String name, String lockPath, List<ACL> acl,
-                                                        DistributedOperation op, long timeout, TimeUnit unit)
+    private <T> DistributedOperationResult<T> withLockInternal(String name, String lockPath, List<ACL> acl,
+                                                        DistributedOperation<T> op, long timeout, TimeUnit unit)
     throws InterruptedException, KeeperException {
         BlockingWriteLock lock = new BlockingWriteLock(name, zk, lockPath, acl);
         try {
             boolean lockObtained = lock.lock(timeout, unit);
             if (lockObtained) {
-                return new DistributedOperationResult(false, op.execute());
+                return new DistributedOperationResult<T>(false, op.execute());
             }
             return new DistributedOperationResult(true, null);
         } finally {

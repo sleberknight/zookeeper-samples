@@ -20,9 +20,9 @@ public class WorkerUsingDistributedOperation {
         ZooKeeper zooKeeper = connectionHelper.connect(hosts);
 
         new DistributedOperationExecutor(zooKeeper).withLock(myName, path, ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                new DistributedOperation() {
+                new DistributedOperation<Void>() {
                     @Override
-                    public Object execute() {
+                    public Void execute() {
                         int seconds = new RandomAmountOfWork().timeItWillTake();
                         long workTimeMillis = seconds * 1000;
                         System.out.printf("%s is doing some work for %d seconds\n", myName, seconds);

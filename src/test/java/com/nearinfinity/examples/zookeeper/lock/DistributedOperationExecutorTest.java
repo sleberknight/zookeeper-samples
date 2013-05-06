@@ -67,9 +67,9 @@ public class DistributedOperationExecutorTest {
     @Test
     public void testWithLock() throws InterruptedException, KeeperException {
         assertThat(zooKeeper.exists(testLockPath, false), is(nullValue()));
-        executor.withLock("Test Lock", testLockPath, new DistributedOperation() {
+        executor.withLock("Test Lock", testLockPath, new DistributedOperation<Void>() {
             @Override
-            public Object execute() throws DistributedOperationException {
+            public Void execute() throws DistributedOperationException {
                 assertNumberOfChildren(zooKeeper, testLockPath, 1);
                 return null;
             }
@@ -80,11 +80,11 @@ public class DistributedOperationExecutorTest {
     @Test
     public void testWithLockHavingSpecifiedTimeout() throws InterruptedException, KeeperException {
         assertThat(zooKeeper.exists(testLockPath, false), is(nullValue()));
-        final Object opResult = "success";
-        DistributedOperationResult result = executor.withLock("Test Lock w/Timeout", testLockPath,
-                new DistributedOperation() {
+        final String opResult = "success";
+        DistributedOperationResult<String> result = executor.withLock("Test Lock w/Timeout", testLockPath,
+                new DistributedOperation<String>() {
                     @Override
-                    public Object execute() throws DistributedOperationException {
+                    public String execute() throws DistributedOperationException {
                         return opResult;
                     }
                 }, 10, TimeUnit.SECONDS);
@@ -95,11 +95,11 @@ public class DistributedOperationExecutorTest {
     @Test
     public void testWithLockHavingACLAndHavingSpecifiedTimeout() throws InterruptedException, KeeperException {
         assertThat(zooKeeper.exists(testLockPath, false), is(nullValue()));
-        final Object opResult = "success";
-        DistributedOperationResult result = executor.withLock("Test Lock w/Timeout", testLockPath, ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                new DistributedOperation() {
+        final String opResult = "success";
+        DistributedOperationResult<String> result = executor.withLock("Test Lock w/Timeout", testLockPath, ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                new DistributedOperation<String>() {
                     @Override
-                    public Object execute() throws DistributedOperationException {
+                    public String execute() throws DistributedOperationException {
                         return opResult;
                     }
                 }, 10, TimeUnit.SECONDS);
@@ -148,7 +148,7 @@ public class DistributedOperationExecutorTest {
         return opThread;
     }
 
-    static class TestDistOp implements DistributedOperation {
+    static class TestDistOp implements DistributedOperation<Void> {
 
         static AtomicInteger callCount = new AtomicInteger(0);
 
@@ -161,7 +161,7 @@ public class DistributedOperationExecutorTest {
         }
 
         @Override
-        public Object execute() throws DistributedOperationException {
+        public Void execute() throws DistributedOperationException {
             callCount.incrementAndGet();
             executed.set(true);
             return null;
