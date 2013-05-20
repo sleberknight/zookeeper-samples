@@ -8,15 +8,15 @@ import org.apache.zookeeper.Watcher;
 
 public class ConfigWatcher implements Watcher {
 
-    private ActiveKeyValueStore store;
+    private ActiveKeyValueStore _store;
 
     public ConfigWatcher(String hosts) throws InterruptedException, IOException {
-        store = new ActiveKeyValueStore();
-        store.connect(hosts);
+        _store = new ActiveKeyValueStore();
+        _store.connect(hosts);
     }
 
     public void displayConfig() throws InterruptedException, KeeperException {
-        String value = store.read(ConfigUpdater.PATH, this);
+        String value = _store.read(ConfigUpdater.PATH, this);
         System.out.printf("Read %s as %s\n", ConfigUpdater.PATH, value);
     }
 

@@ -10,21 +10,21 @@ public class ConfigUpdater {
 
     public static final String PATH = "/config";
 
-    private ActiveKeyValueStore store;
-    private Random random = new Random();
+    private ActiveKeyValueStore _store;
+    private Random _random = new Random();
 
     public ConfigUpdater(String hosts) throws IOException, InterruptedException {
-        store = new ActiveKeyValueStore();
-        store.connect(hosts);
+        _store = new ActiveKeyValueStore();
+        _store.connect(hosts);
     }
 
     public void run() throws InterruptedException, KeeperException {
         //noinspection InfiniteLoopStatement
         while (true) {
-            String value = random.nextInt(100) + "";
-            store.write(PATH, value);
+            String value = _random.nextInt(100) + "";
+            _store.write(PATH, value);
             System.out.printf("Set %s to %s\n", PATH, value);
-            TimeUnit.SECONDS.sleep(random.nextInt(10));
+            TimeUnit.SECONDS.sleep(_random.nextInt(10));
         }
     }
 
