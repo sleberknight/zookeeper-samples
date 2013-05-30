@@ -13,25 +13,25 @@ import org.apache.zookeeper.ZooKeeper;
 public class CreateGroup implements Watcher {
 
     private static final int SESSION_TIMEOUT = 5000;
-    private ZooKeeper zk;
-    private CountDownLatch connectedSignal = new CountDownLatch(1);
+    private ZooKeeper _zk;
+    private CountDownLatch _connectedSignal = new CountDownLatch(1);
 
     public void connect(String hosts) throws IOException, InterruptedException {
-        zk = new ZooKeeper(hosts, SESSION_TIMEOUT, this);
-        connectedSignal.await();
+        _zk = new ZooKeeper(hosts, SESSION_TIMEOUT, this);
+        _connectedSignal.await();
     }
 
     @Override
     public void process(WatchedEvent event) { // Watcher interface
         if (event.getState() == Event.KeeperState.SyncConnected) {
             System.out.println("Connected...");
-            connectedSignal.countDown();
+            _connectedSignal.countDown();
         }
     }
 
     public void create(String groupName) throws KeeperException, InterruptedException {
         String path = "/" + groupName;
-        String createdPath = zk.create(path,
+        String createdPath = _zk.create(path,
                 null /*data*/,
                 ZooDefs.Ids.OPEN_ACL_UNSAFE,
                 CreateMode.PERSISTENT);
@@ -39,7 +39,7 @@ public class CreateGroup implements Watcher {
     }
 
     public void close() throws InterruptedException {
-        zk.close();
+        _zk.close();
     }
 
     public static void main(String[] args) throws Exception {

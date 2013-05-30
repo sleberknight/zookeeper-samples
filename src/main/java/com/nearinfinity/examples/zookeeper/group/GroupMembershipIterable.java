@@ -1,23 +1,23 @@
 package com.nearinfinity.examples.zookeeper.group;
 
-import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooKeeper;
-
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
+import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.ZooKeeper;
+
 public class GroupMembershipIterable implements Iterable<List<String>> {
 
-    private ZooKeeper zooKeeper;
-    private String groupName;
-    private String groupPath;
-    private Semaphore semaphore = new Semaphore(1);
+    private ZooKeeper _zooKeeper;
+    private String _groupName;
+    private String _groupPath;
+    private Semaphore _semaphore = new Semaphore(1);
 
     public static void main(String[] args) throws IOException, InterruptedException {
         ZooKeeper zk = new ConnectionHelper().connect(args[0]);
@@ -32,9 +32,9 @@ public class GroupMembershipIterable implements Iterable<List<String>> {
     }
 
     public GroupMembershipIterable(ZooKeeper zooKeeper, String groupName) {
-        this.zooKeeper = zooKeeper;
-        this.groupName = groupName;
-        this.groupPath = pathFor(groupName);
+        _zooKeeper = zooKeeper;
+        _groupName = groupName;
+        _groupPath = pathFor(groupName);
     }
 
     @Override
@@ -43,8 +43,8 @@ public class GroupMembershipIterable implements Iterable<List<String>> {
             @Override
             public boolean hasNext() {
                 try {
-                    semaphore.acquire();
-                    return zooKeeper.exists(groupPath, false) != null;
+                    _semaphore.acquire();
+                    return _zooKeeper.exists(_groupPath, false) != null;
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 } catch (KeeperException e) {
@@ -55,7 +55,7 @@ public class GroupMembershipIterable implements Iterable<List<String>> {
             @Override
             public List<String> next() {
                 try {
-                    return list(groupName);
+                    return list(_groupName);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 } catch (KeeperException e) {
@@ -72,13 +72,13 @@ public class GroupMembershipIterable implements Iterable<List<String>> {
 
     private List<String> list(final String groupName) throws KeeperException, InterruptedException {
         String path = pathFor(groupName);
-        List<String> children = zooKeeper.getChildren(path, new Watcher() {
+        List<String> children = _zooKeeper.getChildren(path, new Watcher() {
             @Override
             public void process(WatchedEvent event) {
                 if (event.getType() == Event.EventType.NodeChildrenChanged) {
-                    semaphore.release();
-                } else if (event.getType() == Event.EventType.NodeDeleted && event.getPath().equals(groupPath)) {
-                    semaphore.release();
+                    _semaphore.release();
+                } else if (event.getType() == Event.EventType.NodeDeleted && event.getPath().equals(_groupPath)) {
+                    _semaphore.release();
                 }
             }
         });
