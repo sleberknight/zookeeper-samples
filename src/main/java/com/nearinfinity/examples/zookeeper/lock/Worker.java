@@ -12,7 +12,7 @@ import com.nearinfinity.examples.zookeeper.util.RandomAmountOfWork;
 
 public class Worker {
 
-    private static CountDownLatch workDoneSignal = new CountDownLatch(1);
+    private static CountDownLatch _workDoneSignal = new CountDownLatch(1);
 
     public static void main(String[] args) throws Exception {
         String hosts = args[0];
@@ -29,7 +29,7 @@ public class Worker {
         if (!gotLockImmediately) {
             System.out.printf("%s waiting for lock...\n", myName);
         }
-        workDoneSignal.await();
+        _workDoneSignal.await();
 
         System.out.printf("Work done signal was sent. %s is unlocking the lock\n", myName);
         lock.unlock();  // Does not need to be in a finally. Why? (hint: we're in a main method)
@@ -50,23 +50,23 @@ public class Worker {
 
     static class WorkerLockListener implements LockListener {
 
-        private String workerName;
+        private String _workerName;
 
         WorkerLockListener(String workerName) {
-            this.workerName = workerName;
+            _workerName = workerName;
         }
 
         @Override
         public void lockAcquired() {
-            System.out.printf("Lock acquired by %s\n", workerName);
-            doSomeWork(workerName);
-            System.out.printf("%s is now done doing work\n", workerName);
-            workDoneSignal.countDown();
+            System.out.printf("Lock acquired by %s\n", _workerName);
+            doSomeWork(_workerName);
+            System.out.printf("%s is now done doing work\n", _workerName);
+            _workDoneSignal.countDown();
         }
 
         @Override
         public void lockReleased() {
-            System.out.printf("Lock released by %s\n", workerName);
+            System.out.printf("Lock released by %s\n", _workerName);
         }
     }
 }

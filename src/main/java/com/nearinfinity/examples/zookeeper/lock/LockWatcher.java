@@ -15,9 +15,9 @@ import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
 
 public class LockWatcher implements Watcher {
 
-    private ZooKeeper zk;
-    private String lockPath;
-    private Semaphore semaphore = new Semaphore(1);
+    private ZooKeeper _zk;
+    private String _lockPath;
+    private Semaphore _semaphore = new Semaphore(1);
 
     public static void main(String[] args) throws IOException, InterruptedException, KeeperException {
         String hosts = args[0];
@@ -31,21 +31,21 @@ public class LockWatcher implements Watcher {
     }
 
     public LockWatcher(ZooKeeper zk, String lockPath) throws InterruptedException, KeeperException {
-        this.zk = zk;
-        this.lockPath = lockPath;
+        _zk = zk;
+        _lockPath = lockPath;
         ensureLockPathExists(zk, lockPath);
     }
 
     public void watch() throws InterruptedException, KeeperException {
         System.out.println("Acquire initial semaphore");
-        semaphore.acquire();
+        _semaphore.acquire();
 
         // noinspection InfiniteLoopStatement
         while (true) {
             System.out.println("Getting children");
-            List<String> children = zk.getChildren(lockPath, this);
+            List<String> children = _zk.getChildren(_lockPath, this);
             printChildren(children);
-            semaphore.acquire();
+            _semaphore.acquire();
         }
     }
 
@@ -53,7 +53,7 @@ public class LockWatcher implements Watcher {
     public void process(WatchedEvent event) {
         if (event.getType() == Event.EventType.NodeChildrenChanged) {
             System.out.printf("Received %s event\n", Event.EventType.NodeChildrenChanged.name());
-            semaphore.release();
+            _semaphore.release();
         }
     }
 
