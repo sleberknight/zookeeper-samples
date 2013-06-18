@@ -25,63 +25,63 @@ import static org.junit.Assert.assertThat;
 
 public class DistributedOperationExecutorTest {
 
-    private static EmbeddedZooKeeperServer embeddedServer;
-    private ZooKeeper zooKeeper;
-    private String testLockPath;
-    private DistributedOperationExecutor executor;
+    private static EmbeddedZooKeeperServer _embeddedServer;
+    private ZooKeeper _zooKeeper;
+    private String _testLockPath;
+    private DistributedOperationExecutor _executor;
 
     private static final int ZK_PORT = 53181;
     private static final String ZK_CONNECTION_STRING = "localhost:" + ZK_PORT;
 
     @BeforeClass
     public static void beforeAll() throws IOException, InterruptedException {
-        embeddedServer = new EmbeddedZooKeeperServer(ZK_PORT);
-        embeddedServer.start();
+        _embeddedServer = new EmbeddedZooKeeperServer(ZK_PORT);
+        _embeddedServer.start();
     }
 
     @AfterClass
     public static void afterAll() {
-        embeddedServer.shutdown();
+        _embeddedServer.shutdown();
     }
 
     @Before
     public void setUp() throws IOException, InterruptedException {
-        zooKeeper = new ConnectionHelper().connect(ZK_CONNECTION_STRING);
-        testLockPath = "/test-write-lock-" + System.currentTimeMillis();
-        executor = new DistributedOperationExecutor(zooKeeper);
+        _zooKeeper = new ConnectionHelper().connect(ZK_CONNECTION_STRING);
+        _testLockPath = "/test-write-lock-" + System.currentTimeMillis();
+        _executor = new DistributedOperationExecutor(_zooKeeper);
     }
 
     @After
     public void tearDown() throws InterruptedException, KeeperException {
-        if (zooKeeper.exists(testLockPath, false) == null) {
+        if (_zooKeeper.exists(_testLockPath, false) == null) {
             return;
         }
 
-        List<String> children = zooKeeper.getChildren(testLockPath, false);
+        List<String> children = _zooKeeper.getChildren(_testLockPath, false);
         for (String child : children) {
-            zooKeeper.delete(testLockPath + "/" + child, -1);
+            _zooKeeper.delete(_testLockPath + "/" + child, -1);
         }
-        zooKeeper.delete(testLockPath, -1);
+        _zooKeeper.delete(_testLockPath, -1);
     }
 
     @Test
     public void testWithLock() throws InterruptedException, KeeperException {
-        assertThat(zooKeeper.exists(testLockPath, false), is(nullValue()));
-        executor.withLock("Test Lock", testLockPath, new DistributedOperation<Void>() {
+        assertThat(_zooKeeper.exists(_testLockPath, false), is(nullValue()));
+        _executor.withLock("Test Lock", _testLockPath, new DistributedOperation<Void>() {
             @Override
             public Void execute() throws DistributedOperationException {
-                assertNumberOfChildren(zooKeeper, testLockPath, 1);
+                assertNumberOfChildren(_zooKeeper, _testLockPath, 1);
                 return null;
             }
         });
-        assertNumberOfChildren(zooKeeper, testLockPath, 0);
+        assertNumberOfChildren(_zooKeeper, _testLockPath, 0);
     }
 
     @Test
     public void testWithLockHavingSpecifiedTimeout() throws InterruptedException, KeeperException {
-        assertThat(zooKeeper.exists(testLockPath, false), is(nullValue()));
+        assertThat(_zooKeeper.exists(_testLockPath, false), is(nullValue()));
         final String opResult = "success";
-        DistributedOperationResult<String> result = executor.withLock("Test Lock w/Timeout", testLockPath,
+        DistributedOperationResult<String> result = _executor.withLock("Test Lock w/Timeout", _testLockPath,
                 new DistributedOperation<String>() {
                     @Override
                     public String execute() throws DistributedOperationException {
@@ -94,9 +94,9 @@ public class DistributedOperationExecutorTest {
 
     @Test
     public void testWithLockHavingACLAndHavingSpecifiedTimeout() throws InterruptedException, KeeperException {
-        assertThat(zooKeeper.exists(testLockPath, false), is(nullValue()));
+        assertThat(_zooKeeper.exists(_testLockPath, false), is(nullValue()));
         final String opResult = "success";
-        DistributedOperationResult<String> result = executor.withLock("Test Lock w/Timeout", testLockPath, ZooDefs.Ids.OPEN_ACL_UNSAFE,
+        DistributedOperationResult<String> result = _executor.withLock("Test Lock w/Timeout", _testLockPath, ZooDefs.Ids.OPEN_ACL_UNSAFE,
                 new DistributedOperation<String>() {
                     @Override
                     public String execute() throws DistributedOperationException {
@@ -109,7 +109,7 @@ public class DistributedOperationExecutorTest {
 
     @Test
     public void testWithLockForMultipleLocksInDifferentThreads() throws InterruptedException, KeeperException {
-        assertThat(zooKeeper.exists(testLockPath, false), is(nullValue()));
+        assertThat(_zooKeeper.exists(_testLockPath, false), is(nullValue()));
         List<TestDistOp> ops = Arrays.asList(
                 new TestDistOp("op-1"),
                 new TestDistOp("op-2"),
@@ -138,7 +138,7 @@ public class DistributedOperationExecutorTest {
             @Override
             public void run() {
                 try {
-                    executor.withLock(op.name, testLockPath, op);
+                    _executor.withLock(op.name, _testLockPath, op);
                 } catch (Exception ex) {
                     throw new DistributedOperationException(ex);
                 }

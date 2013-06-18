@@ -19,64 +19,64 @@ import static org.junit.Assert.assertThat;
 
 public class BlockingWriteLockTest {
 
-    private static EmbeddedZooKeeperServer embeddedServer;
-    private ZooKeeper zooKeeper;
-    private String testLockPath;
-    private BlockingWriteLock writeLock;
+    private static EmbeddedZooKeeperServer _embeddedServer;
+    private ZooKeeper _zooKeeper;
+    private String _testLockPath;
+    private BlockingWriteLock _writeLock;
 
     private static final int ZK_PORT = 53181;
     private static final String ZK_CONNECTION_STRING = "localhost:" + ZK_PORT;
 
     @BeforeClass
     public static void beforeAll() throws IOException, InterruptedException {
-        embeddedServer = new EmbeddedZooKeeperServer(ZK_PORT);
-        embeddedServer.start();
+        _embeddedServer = new EmbeddedZooKeeperServer(ZK_PORT);
+        _embeddedServer.start();
     }
 
     @AfterClass
     public static void afterAll() {
-        embeddedServer.shutdown();
+        _embeddedServer.shutdown();
     }
 
     @Before
     public void setUp() throws IOException, InterruptedException {
-        zooKeeper = new ConnectionHelper().connect(ZK_CONNECTION_STRING);
-        testLockPath = "/test-writeLock-" + System.currentTimeMillis();
-        writeLock = new BlockingWriteLock("Test Lock", zooKeeper, testLockPath);
+        _zooKeeper = new ConnectionHelper().connect(ZK_CONNECTION_STRING);
+        _testLockPath = "/test-writeLock-" + System.currentTimeMillis();
+        _writeLock = new BlockingWriteLock("Test Lock", _zooKeeper, _testLockPath);
     }
 
     @After
     public void tearDown() throws InterruptedException, KeeperException {
-        List<String> children = zooKeeper.getChildren(testLockPath, false);
+        List<String> children = _zooKeeper.getChildren(_testLockPath, false);
         for (String child : children) {
-            zooKeeper.delete(testLockPath + "/" + child, -1);
+            _zooKeeper.delete(_testLockPath + "/" + child, -1);
         }
-        zooKeeper.delete(testLockPath, -1);
+        _zooKeeper.delete(_testLockPath, -1);
     }
 
     @Test
     public void testLock() throws InterruptedException, KeeperException {
-        writeLock.lock();
-        assertNumberOfChildren(zooKeeper, testLockPath, 1);
+        _writeLock.lock();
+        assertNumberOfChildren(_zooKeeper, _testLockPath, 1);
     }
 
     @Test
     public void testLockWithTimeout() throws InterruptedException, KeeperException {
-        boolean obtainedLock = writeLock.lock(10, TimeUnit.SECONDS);
+        boolean obtainedLock = _writeLock.lock(10, TimeUnit.SECONDS);
         assertThat(obtainedLock, is(true));
     }
 
     @Test
     public void testTryLock() throws InterruptedException, KeeperException {
-        boolean obtainedLock = writeLock.tryLock();
+        boolean obtainedLock = _writeLock.tryLock();
         assertThat(obtainedLock, is(true));
     }
 
     @Test
     public void testUnlock() throws InterruptedException, KeeperException {
-        writeLock.lock();
-        writeLock.unlock();
-        assertNumberOfChildren(zooKeeper, testLockPath, 0);
+        _writeLock.lock();
+        _writeLock.unlock();
+        assertNumberOfChildren(_zooKeeper, _testLockPath, 0);
     }
 
     private void assertNumberOfChildren(ZooKeeper zk, String path, int expectedNumber)

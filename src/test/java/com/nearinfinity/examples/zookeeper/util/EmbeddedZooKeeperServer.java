@@ -1,14 +1,14 @@
 package com.nearinfinity.examples.zookeeper.util;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.zookeeper.server.NIOServerCnxnFactory;
-import org.apache.zookeeper.server.ZooKeeperServer;
-import org.apache.zookeeper.server.persistence.FileTxnSnapLog;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Random;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.zookeeper.server.NIOServerCnxnFactory;
+import org.apache.zookeeper.server.ZooKeeperServer;
+import org.apache.zookeeper.server.persistence.FileTxnSnapLog;
 
 /**
  * Mimics what {@link org.apache.zookeeper.server.ZooKeeperServerMain} does, but provides a way to shut it down for
@@ -19,19 +19,19 @@ import java.util.Random;
  */
 public final class EmbeddedZooKeeperServer {
 
-    private int port;
-    private String dataDirectoryName;
-    private boolean manageDataDir;
-    private int tickTime;
-    private NIOServerCnxnFactory cnxnFactory;
+    private int _port;
+    private String _dataDirectoryName;
+    private boolean _manageDataDir;
+    private int _tickTime;
+    private NIOServerCnxnFactory _cnxnFactory;
 
     public static final int MAX_CLIENT_CONNECTIONS = 60;
     public static final int DEFAULT_TICK_TIME = 2000;
 
     public EmbeddedZooKeeperServer(int port) {
         Random random = new Random(System.currentTimeMillis());
-        this.dataDirectoryName = System.getProperty("java.io.tmpdir") + "zookeeper-data-" + random.nextInt();
-        init(port, dataDirectoryName, true, DEFAULT_TICK_TIME);
+        this._dataDirectoryName = System.getProperty("java.io.tmpdir") + "zookeeper-data-" + random.nextInt();
+        init(port, _dataDirectoryName, true, DEFAULT_TICK_TIME);
     }
 
     public EmbeddedZooKeeperServer(int port, String dataDirectoryName, int tickTime) {
@@ -40,28 +40,28 @@ public final class EmbeddedZooKeeperServer {
 
     public void start() throws IOException, InterruptedException {
         ZooKeeperServer zkServer = new ZooKeeperServer();
-        File dataDirectory = new File(dataDirectoryName);
+        File dataDirectory = new File(_dataDirectoryName);
         FileTxnSnapLog ftxn = new FileTxnSnapLog(dataDirectory, dataDirectory);
         zkServer.setTxnLogFactory(ftxn);
-        zkServer.setTickTime(tickTime);
-        cnxnFactory = new NIOServerCnxnFactory();
-        cnxnFactory.configure(new InetSocketAddress(port), MAX_CLIENT_CONNECTIONS);
-        cnxnFactory.startup(zkServer);
+        zkServer.setTickTime(_tickTime);
+        _cnxnFactory = new NIOServerCnxnFactory();
+        _cnxnFactory.configure(new InetSocketAddress(_port), MAX_CLIENT_CONNECTIONS);
+        _cnxnFactory.startup(zkServer);
     }
 
     public void shutdown() {
-        if (cnxnFactory != null) {
-            cnxnFactory.shutdown();
+        if (_cnxnFactory != null) {
+            _cnxnFactory.shutdown();
         }
-        removeDataDirectoryIfNecessary(dataDirectoryName, manageDataDir);
+        removeDataDirectoryIfNecessary(_dataDirectoryName, _manageDataDir);
     }
 
     private void init(int port, String dataDirectoryName, boolean manageDataDir, int tickTime) {
-        this.port = port;
-        this.dataDirectoryName = dataDirectoryName;
-        this.manageDataDir = manageDataDir;
+        this._port = port;
+        this._dataDirectoryName = dataDirectoryName;
+        this._manageDataDir = manageDataDir;
         createDataDirectoryIfNecessary(dataDirectoryName, manageDataDir);
-        this.tickTime = tickTime;
+        this._tickTime = tickTime;
     }
 
     private void createDataDirectoryIfNecessary(String dataDirectoryName, boolean manageDataDir) {
