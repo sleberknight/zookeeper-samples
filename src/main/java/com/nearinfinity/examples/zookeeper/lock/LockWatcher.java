@@ -1,17 +1,17 @@
 package com.nearinfinity.examples.zookeeper.lock;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
+import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
-
-import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
 
 public class LockWatcher implements Watcher {
 
@@ -42,7 +42,7 @@ public class LockWatcher implements Watcher {
 
         // noinspection InfiniteLoopStatement
         while (true) {
-            System.out.println("Getting children");
+            System.out.printf("Getting children for lock path %s\n", _lockPath);
             List<String> children = _zk.getChildren(_lockPath, this);
             printChildren(children);
             _semaphore.acquire();
@@ -69,11 +69,11 @@ public class LockWatcher implements Watcher {
 
     private void printChildren(List<String> children) {
         if (children.isEmpty()) {
-            System.out.println("No one has the lock at the moment...");
+            System.out.printf("No one has the lock on %s at the moment...\n", _lockPath);
             return;
         }
 
-        System.out.println("Current lock nodes:");
+        System.out.printf("Current lock nodes at %s:\n", new Date());
         for (String child : children) {
             System.out.printf("  %s\n", child);
         }
