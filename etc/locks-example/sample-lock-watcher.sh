@@ -1,0 +1,1 @@
+./lock-watcher.sh /sample-lock
