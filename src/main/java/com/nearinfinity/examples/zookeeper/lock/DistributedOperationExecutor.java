@@ -60,7 +60,7 @@ public class DistributedOperationExecutor {
             if (lockObtained) {
                 return new DistributedOperationResult<T>(false, op.execute());
             }
-            return new DistributedOperationResult(true, null);
+            return new DistributedOperationResult<T>(true, null);
         } finally {
             lock.unlock();
         }
