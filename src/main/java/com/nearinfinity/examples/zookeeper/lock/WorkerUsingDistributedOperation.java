@@ -9,6 +9,10 @@ import org.apache.zookeeper.ZooKeeper;
 import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
 import com.nearinfinity.examples.zookeeper.util.RandomAmountOfWork;
 
+/**
+ * This Worker uses the {@link DistributedOperationExecutor} (which currently uses {@link BlockingWriteLock}
+ * internally).
+ */
 public class WorkerUsingDistributedOperation {
 
     public static void main(String[] args) throws IOException, InterruptedException, KeeperException {

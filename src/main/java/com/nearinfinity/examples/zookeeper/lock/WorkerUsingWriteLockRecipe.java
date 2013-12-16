@@ -10,7 +10,10 @@ import org.apache.zookeeper.recipes.lock.WriteLock;
 import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
 import com.nearinfinity.examples.zookeeper.util.RandomAmountOfWork;
 
-public class Worker {
+/**
+ * This worker uses the {@link WriteLock} and {@link LockListener} classes provided in ZooKeeper recipes.
+ */
+public class WorkerUsingWriteLockRecipe {
 
     private static CountDownLatch _workDoneSignal = new CountDownLatch(1);
 

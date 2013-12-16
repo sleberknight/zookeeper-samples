@@ -6,6 +6,9 @@ import org.apache.zookeeper.ZooKeeper;
 import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
 import com.nearinfinity.examples.zookeeper.util.RandomAmountOfWork;
 
+/**
+ * This Worker uses the {@link BlockingWriteLock}.
+ */
 public class WorkerUsingBlockingWriteLock {
 
     public static void main(String[] args) throws Exception {

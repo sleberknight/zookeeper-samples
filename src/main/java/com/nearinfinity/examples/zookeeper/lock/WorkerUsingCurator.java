@@ -9,7 +9,10 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 
-public class CuratorWorker {
+/**
+ * This Worker uses the Curator {@link InterProcessMutex} class to perform locking.
+ */
+public class WorkerUsingCurator {
 
     static final long DEFAULT_WAIT_TIME_SECONDS = Long.MAX_VALUE;
 
