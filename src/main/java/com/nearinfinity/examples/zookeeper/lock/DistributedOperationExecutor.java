@@ -24,7 +24,7 @@ public class DistributedOperationExecutor {
     }
 
     public <T> DistributedOperationResult<T> withLock(String name, String lockPath, DistributedOperation<T> op,
-                                               long timeout, TimeUnit unit)
+                                                      long timeout, TimeUnit unit)
             throws InterruptedException, KeeperException {
         return withLockInternal(name, lockPath, DEFAULT_ACL, op, timeout, unit);
     }
@@ -35,7 +35,7 @@ public class DistributedOperationExecutor {
     }
 
     public <T> DistributedOperationResult<T> withLock(String name, String lockPath, List<ACL> acl, DistributedOperation<T> op,
-                                               long timeout, TimeUnit unit)
+                                                      long timeout, TimeUnit unit)
             throws InterruptedException, KeeperException {
         return withLockInternal(name, lockPath, acl, op, timeout, unit);
     }
