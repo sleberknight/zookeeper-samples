@@ -52,8 +52,8 @@ public class DistributedOperationExecutor {
     }
 
     private <T> DistributedOperationResult<T> withLockInternal(String name, String lockPath, List<ACL> acl,
-                                                        DistributedOperation<T> op, long timeout, TimeUnit unit)
-    throws InterruptedException, KeeperException {
+                                                               DistributedOperation<T> op, long timeout, TimeUnit unit)
+            throws InterruptedException, KeeperException {
         BlockingWriteLock lock = new BlockingWriteLock(name, _zk, lockPath, acl);
         try {
             boolean lockObtained = lock.lock(timeout, unit);
