@@ -16,6 +16,8 @@ import org.apache.zookeeper.server.persistence.FileTxnSnapLog;
  *
  * TODO After upgrading to ZK 3.4.5 the tests execute slower, sometimes much slower and it looks like, from the logs,
  *      there are a bunch of issues related to disconnects and reconnect attempts. Not sure why.
+ * 
+ * TODO Better idea: replace this with Curator's TestingServer.
  */
 public final class EmbeddedZooKeeperServer {
 
