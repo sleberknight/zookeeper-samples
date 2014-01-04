@@ -6,6 +6,7 @@ import com.nearinfinity.examples.zookeeper.util.RandomAmountOfWork;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.recipes.locks.InterProcessLock;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 
@@ -33,7 +34,7 @@ public class WorkerUsingCurator {
         CuratorFramework client = CuratorFrameworkFactory.newClient(hosts, retryPolicy);
         client.start();
 
-        InterProcessMutex lock = new InterProcessMutex(client, lockPath);
+        InterProcessLock lock = new InterProcessMutex(client, lockPath);
         if (lock.acquire(waitTimeSeconds, TimeUnit.SECONDS)) {
             try {
                 doSomeWork(myName);
