@@ -2,11 +2,14 @@ package com.nearinfinity.examples.zookeeper.group;
 
 import java.util.List;
 
-import org.apache.zookeeper.KeeperException;
-
 import com.nearinfinity.examples.zookeeper.util.ConnectionWatcher;
+import org.apache.zookeeper.KeeperException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ListGroup extends ConnectionWatcher {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ListGroup.class);
 
     public void list(String groupName) throws KeeperException, InterruptedException {
         String path = "/" + groupName;
@@ -14,15 +17,14 @@ public class ListGroup extends ConnectionWatcher {
         try {
             List<String> children = zk.getChildren(path, false);
             if (children.isEmpty()) {
-                System.out.printf("No members in group %s\n", groupName);
+                LOG.info("No members in group {}", groupName);
                 return;
             }
             for (String child : children) {
-                System.out.println(child);
+                LOG.info(child);
             }
-        }
-        catch (KeeperException.NoNodeException e) {
-            System.out.printf("Group %s does not exist\n", groupName);
+        } catch (KeeperException.NoNodeException e) {
+            LOG.error("Group {} does not exist", groupName, e);
         }
     }
 

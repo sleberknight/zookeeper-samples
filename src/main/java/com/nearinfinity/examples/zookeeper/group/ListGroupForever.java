@@ -9,8 +9,12 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ListGroupForever {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ListGroupForever.class);
 
     private ZooKeeper _zooKeeper;
     private Semaphore _semaphore = new Semaphore(1);
@@ -24,6 +28,7 @@ public class ListGroupForever {
         new ListGroupForever(zk).listForever(args[1]);
     }
 
+    @SuppressWarnings("squid:S2189")
     public void listForever(String groupName) throws KeeperException, InterruptedException {
         _semaphore.acquire();
         while (true) {
@@ -44,11 +49,11 @@ public class ListGroupForever {
             }
         });
         if (children.isEmpty()) {
-            System.out.printf("No members in group %s\n", groupName);
+            LOG.info("No members in group {}", groupName);
             return;
         }
         Collections.sort(children);
-        System.out.println(children);
-        System.out.println("--------------------");
+        LOG.info("{}", children);
+        LOG.info("--------------------");
     }
 }

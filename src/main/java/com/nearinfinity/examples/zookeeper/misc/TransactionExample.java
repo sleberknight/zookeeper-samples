@@ -1,5 +1,9 @@
 package com.nearinfinity.examples.zookeeper.misc;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -7,10 +11,8 @@ import org.apache.zookeeper.OpResult;
 import org.apache.zookeeper.Transaction;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The znode /txn-examples is the top level under which a new persistent sequential parent znodes will be created.
@@ -19,9 +21,11 @@ import java.util.List;
  */
 public class TransactionExample {
 
+    private static final Logger LOG = LoggerFactory.getLogger(TransactionExample.class);
+
     public static void main(String[] args) throws IOException, InterruptedException, KeeperException {
         if (args.length < 4) {
-            System.out.printf("Usage: %s <zk-connection-string> <parent-znode> <child-znode-1> <child-znode-2> [<child-znode-n> ...]\n",
+            LOG.info("Usage: {} <zk-connection-string> <parent-znode> <child-znode-1> <child-znode-2> [<child-znode-n> ...]",
                     TransactionExample.class.getSimpleName());
             System.exit(1);
         }
@@ -30,39 +34,39 @@ public class TransactionExample {
 
         String topZnodePath = "/txn-examples";
         if (zooKeeper.exists(topZnodePath, false) == null) {
-            System.out.printf("Creating top level znode %s for transaction examples\n", topZnodePath);
+            LOG.info("Creating top level znode {} for transaction examples", topZnodePath);
             zooKeeper.create(topZnodePath, null, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
         }
 
         String baseParentPath = topZnodePath + "/" + args[1] + "-";
         String parentPath = zooKeeper.create(baseParentPath, null, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL);
-        System.out.printf("Created parent znode %s\n", parentPath);
+        LOG.info("Created parent znode {}", parentPath);
 
         List<String> childPaths = new ArrayList<String>(args.length - 2);
         Transaction txn = zooKeeper.transaction();
         for (int i = 2; i < args.length; i++) {
             String childPath = parentPath + "/" + args[i];
             childPaths.add(childPath);
-            System.out.printf("Adding create op with child path %s\n", childPath);
+            LOG.info("Adding create op with child path {}", childPath);
             txn.create(childPath, null, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
         }
-        System.out.println("Committing transaction");
+        LOG.info("Committing transaction");
         List<OpResult> opResults = txn.commit();
 
-        System.out.println("Transactions results:");
+        LOG.info("Transactions results:");
         for (int i = 0; i < opResults.size(); i++) {
             OpResult opResult = opResults.get(i);
             int type = opResult.getType();
             String childPath = childPaths.get(i);
             switch (type) {
                 case ZooDefs.OpCode.create:
-                    System.out.printf("Child node %s created successfully\n", childPath);
+                    LOG.info("Child node {} created successfully", childPath);
                     break;
                 case ZooDefs.OpCode.error:
-                    System.out.printf("Child node %s was not created. There was an error.\n", childPath);
+                    LOG.info("Child node {} was not created. There was an error.", childPath);
                     break;
                 default:
-                    System.out.printf("Don't know what happened with child node %s! OpResult type: %d", childPath, type);
+                    LOG.info("Don't know what happened with child node {}! OpResult type: {}", childPath, type);
             }
         }
     }

@@ -1,15 +1,18 @@
 package com.nearinfinity.examples.zookeeper.lock;
 
-import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.ZooKeeper;
-
 import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
 import com.nearinfinity.examples.zookeeper.util.RandomAmountOfWork;
+import org.apache.zookeeper.ZooDefs;
+import org.apache.zookeeper.ZooKeeper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This Worker uses the {@link BlockingWriteLock}.
  */
 public class WorkerUsingBlockingWriteLock {
+
+    private static final Logger LOG = LoggerFactory.getLogger(WorkerUsingBlockingWriteLock.class);
 
     public static void main(String[] args) throws Exception {
         String hosts = args[0];
@@ -20,15 +23,15 @@ public class WorkerUsingBlockingWriteLock {
         ZooKeeper zooKeeper = connectionHelper.connect(hosts);
         BlockingWriteLock lock = new BlockingWriteLock(myName, zooKeeper, path, ZooDefs.Ids.OPEN_ACL_UNSAFE);
 
-        System.out.printf("%s is attempting to obtain lock on %s...\n", myName, path);
+        LOG.info("{} is attempting to obtain lock on {}...", myName, path);
 
         lock.lock();
 
-        System.out.printf("%s has obtained lock on %s\n", myName, path);
+        LOG.info("{} has obtained lock on {}", myName, path);
 
         doSomeWork(myName);
 
-        System.out.printf("%s is done doing work, releasing lock on %s\n", myName, path);
+        LOG.info("{} is done doing work, releasing lock on {}", myName, path);
 
         lock.unlock();  // Does not need to be in a finally. Why?  (hint: we're in a main method)
     }
@@ -36,12 +39,11 @@ public class WorkerUsingBlockingWriteLock {
     private static void doSomeWork(String name) {
         int seconds = new RandomAmountOfWork().timeItWillTake();
         long workTimeMillis = seconds * 1000;
-        System.out.printf("%s is doing some work for %d seconds\n", name, seconds);
+        LOG.info("{} is doing some work for {} seconds", name, seconds);
         try {
             Thread.sleep(workTimeMillis);
-        }
-        catch (InterruptedException ex) {
-            System.out.printf("Oops. Interrupted.\n");
+        } catch (InterruptedException ex) {
+            LOG.error("Oops. Interrupted.", ex);
             Thread.currentThread().interrupt();
         }
     }

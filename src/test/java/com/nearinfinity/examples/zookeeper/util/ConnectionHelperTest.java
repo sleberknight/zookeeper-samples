@@ -10,11 +10,15 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class ConnectionHelperTest {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ConnectionHelperTest.class);
 
     private ConnectionHelper _connectionHelper;
     private ZooKeeper _zooKeeper;
@@ -55,7 +59,7 @@ public class ConnectionHelperTest {
     @After
     public void tearDown() throws InterruptedException {
         if (_zooKeeper != null) {
-            System.out.printf("Closing zooKeeper with session id: %d\n", _zooKeeper.getSessionId());
+            LOG.info("Closing zooKeeper with session id: {}", _zooKeeper.getSessionId());
             _zooKeeper.close();
             _zooKeeper = null;
         }

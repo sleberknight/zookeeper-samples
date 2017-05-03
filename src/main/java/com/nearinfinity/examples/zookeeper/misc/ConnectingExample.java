@@ -6,8 +6,12 @@ import java.util.concurrent.CountDownLatch;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ConnectingExample {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ConnectingExample.class);
 
     private static final int SESSION_TIMEOUT = 5000;
 
@@ -28,7 +32,7 @@ public class ConnectingExample {
     public static void main(String[] args) throws IOException, InterruptedException {
         ConnectingExample example = new ConnectingExample();
         ZooKeeper zk = example.connect("localhost:2181");
-        System.out.printf("ZK state: %s\n", zk.getState());
+        LOG.info("ZK state: {}", zk.getState());
         zk.close();
     }
 }

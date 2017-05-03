@@ -11,8 +11,12 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GroupMembershipIterable implements Iterable<List<String>> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GroupMembershipIterable.class);
 
     private ZooKeeper _zooKeeper;
     private String _groupName;
@@ -25,10 +29,10 @@ public class GroupMembershipIterable implements Iterable<List<String>> {
         GroupMembershipIterable iterable = new GroupMembershipIterable(zk, theGroupName);
         Iterator<List<String>> iterator = iterable.iterator();
         while (iterator.hasNext()) {
-            System.out.println(iterator.next());
-            System.out.println("--------------------");
+            LOG.info("{}", iterator.next());
+            LOG.info("--------------------");
         }
-        System.out.printf("Group %s does not exist (anymore)!", theGroupName);
+        LOG.info("Group {} does not exist (anymore)!", theGroupName);
     }
 
     public GroupMembershipIterable(ZooKeeper zooKeeper, String groupName) {

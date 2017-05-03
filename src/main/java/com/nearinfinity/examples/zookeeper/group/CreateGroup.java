@@ -9,8 +9,12 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CreateGroup implements Watcher {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CreateGroup.class);
 
     private static final int SESSION_TIMEOUT = 5000;
     private ZooKeeper _zk;
@@ -24,7 +28,7 @@ public class CreateGroup implements Watcher {
     @Override
     public void process(WatchedEvent event) { // Watcher interface
         if (event.getState() == Event.KeeperState.SyncConnected) {
-            System.out.println("Connected...");
+            LOG.info("Connected...");
             _connectedSignal.countDown();
         }
     }
@@ -35,7 +39,7 @@ public class CreateGroup implements Watcher {
                 null /*data*/,
                 ZooDefs.Ids.OPEN_ACL_UNSAFE,
                 CreateMode.PERSISTENT);
-        System.out.println("Created " + createdPath);
+        LOG.info("Created {}", createdPath);
     }
 
     public void close() throws InterruptedException {

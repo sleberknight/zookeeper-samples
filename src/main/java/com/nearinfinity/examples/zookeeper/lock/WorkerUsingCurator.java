@@ -9,13 +9,17 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.locks.InterProcessLock;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This Worker uses the Curator {@link InterProcessMutex} class to perform locking.
  */
 public class WorkerUsingCurator {
 
-    static final long DEFAULT_WAIT_TIME_SECONDS = Long.MAX_VALUE;
+    private static final Logger LOG = LoggerFactory.getLogger(WorkerUsingCurator.class);
+
+    private static final long DEFAULT_WAIT_TIME_SECONDS = Long.MAX_VALUE;
 
     public static void main(String[] args) throws Exception {
         String hosts = args[0];
@@ -42,7 +46,7 @@ public class WorkerUsingCurator {
                 lock.release();
             }
         } else {
-            System.err.printf("%s timed out after %d seconds waiting to acquire lock on %s\n",
+            LOG.error("{} timed out after {} seconds waiting to acquire lock on {}",
                     myName, waitTimeSeconds, lockPath);
         }
 
@@ -52,11 +56,12 @@ public class WorkerUsingCurator {
     private static void doSomeWork(String name) {
         int seconds = new RandomAmountOfWork().timeItWillTake();
         long workTimeMillis = seconds * 1000;
-        System.out.printf("%s is doing some work for %d seconds\n", name, seconds);
+        LOG.info("{} is doing some work for {} seconds", name, seconds);
+
         try {
             Thread.sleep(workTimeMillis);
         } catch (InterruptedException ex) {
-            System.out.printf("Oops. Interrupted.\n");
+            LOG.error("Oops. Interrupted.", ex);
             Thread.currentThread().interrupt();
         }
     }

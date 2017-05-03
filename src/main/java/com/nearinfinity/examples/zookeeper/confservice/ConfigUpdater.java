@@ -5,8 +5,12 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.zookeeper.KeeperException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ConfigUpdater {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigUpdater.class);
 
     public static final String PATH = "/config";
 
@@ -18,12 +22,13 @@ public class ConfigUpdater {
         _store.connect(hosts);
     }
 
+    @SuppressWarnings("squid:S2189")
     public void run() throws InterruptedException, KeeperException {
         //noinspection InfiniteLoopStatement
         while (true) {
-            String value = _random.nextInt(100) + "";
-            _store.write(PATH, value);
-            System.out.printf("Set %s to %s\n", PATH, value);
+            int value = _random.nextInt(100);
+            _store.write(PATH, Integer.toString(value));
+            LOG.info("Set {} to {}", PATH, value);
             TimeUnit.SECONDS.sleep(_random.nextInt(10));
         }
     }

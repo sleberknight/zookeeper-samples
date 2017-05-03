@@ -10,15 +10,19 @@ import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.recipes.lock.LockListener;
 import org.apache.zookeeper.recipes.lock.WriteLock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BlockingWriteLock {
+
+    private static final Logger LOG = LoggerFactory.getLogger(BlockingWriteLock.class);
 
     private String _name;
     private String _path;
     private WriteLock _writeLock;
     private CountDownLatch _lockAcquiredSignal = new CountDownLatch(1);
 
-    public static final List<ACL> DEFAULT_ACL = ZooDefs.Ids.OPEN_ACL_UNSAFE;
+    private static final List<ACL> DEFAULT_ACL = ZooDefs.Ids.OPEN_ACL_UNSAFE;
 
     public BlockingWriteLock(String name, ZooKeeper zookeeper, String path) {
         this(name, zookeeper, path, DEFAULT_ACL);
@@ -31,13 +35,13 @@ public class BlockingWriteLock {
     }
 
     public void lock() throws InterruptedException, KeeperException {
-        System.out.printf("%s requesting lock on %s...\n", _name, _path);
+        LOG.debug("{} requesting lock on {}...", _name, _path);
         _writeLock.lock();
         _lockAcquiredSignal.await();
     }
 
     public boolean lock(long timeout, TimeUnit unit) throws InterruptedException, KeeperException {
-        System.out.printf("%s requesting lock on %s with timeout %d %s...\n", _name, _path, timeout, unit.name());
+        LOG.debug("{} requesting lock on {} with timeout {} {}...", _name, _path, timeout, unit);
         _writeLock.lock();
         return _lockAcquiredSignal.await(timeout, unit);
     }
@@ -54,13 +58,13 @@ public class BlockingWriteLock {
 
         @Override
         public void lockAcquired() {
-            System.out.printf("Lock acquired by %s on %s\n", _name, _path);
+            LOG.debug("Lock acquired by {} on {}", _name, _path);
             _lockAcquiredSignal.countDown();
         }
 
         @Override
         public void lockReleased() {
-            System.out.printf("Lock released by %s on %s\n", _name, _path);
+            LOG.debug("Lock released by {} on {}", _name, _path);
         }
     }
 }

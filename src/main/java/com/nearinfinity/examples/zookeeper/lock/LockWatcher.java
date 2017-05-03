@@ -12,8 +12,12 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LockWatcher implements Watcher {
+
+    private static final Logger LOG = LoggerFactory.getLogger(LockWatcher.class);
 
     private ZooKeeper _zk;
     private String _lockPath;
@@ -36,13 +40,14 @@ public class LockWatcher implements Watcher {
         ensureLockPathExists(zk, lockPath);
     }
 
+    @SuppressWarnings("squid:S2189")
     public void watch() throws InterruptedException, KeeperException {
-        System.out.println("Acquire initial semaphore");
+        LOG.info("Acquire initial semaphore");
         _semaphore.acquire();
 
         // noinspection InfiniteLoopStatement
         while (true) {
-            System.out.printf("Getting children for lock path %s\n", _lockPath);
+            LOG.info("Getting children for lock path {}", _lockPath);
             List<String> children = _zk.getChildren(_lockPath, this);
             printChildren(children);
             _semaphore.acquire();
@@ -52,7 +57,7 @@ public class LockWatcher implements Watcher {
     @Override
     public void process(WatchedEvent event) {
         if (event.getType() == Event.EventType.NodeChildrenChanged) {
-            System.out.printf("Received %s event\n", Event.EventType.NodeChildrenChanged.name());
+            LOG.info("Received {} event", Event.EventType.NodeChildrenChanged);
             _semaphore.release();
         }
     }
@@ -63,20 +68,20 @@ public class LockWatcher implements Watcher {
         if (zk.exists(lockPath, false) == null) {
             String znodePath =
                     zk.create(lockPath, null /* data */, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-            System.out.printf("Created lock znode having path %s\n", znodePath);
+            LOG.info("Created lock znode having path {}", znodePath);
         }
     }
 
     private void printChildren(List<String> children) {
         if (children.isEmpty()) {
-            System.out.printf("No one has the lock on %s at the moment...\n", _lockPath);
+            LOG.info("No one has the lock on {} at the moment...", _lockPath);
             return;
         }
 
-        System.out.printf("Current lock nodes at %s:\n", new Date());
+        LOG.info("Current lock nodes at {}:", new Date());
         for (String child : children) {
-            System.out.printf("  %s\n", child);
+            LOG.info("  {}", child);
         }
-        System.out.println("--------------------");
+        LOG.info("--------------------");
     }
 }

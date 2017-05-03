@@ -1,12 +1,15 @@
 package com.nearinfinity.examples.zookeeper.group;
 
+import com.nearinfinity.examples.zookeeper.util.ConnectionWatcher;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
-
-import com.nearinfinity.examples.zookeeper.util.ConnectionWatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JoinGroup extends ConnectionWatcher {
+
+    private static final Logger LOG = LoggerFactory.getLogger(JoinGroup.class);
 
     public void join(String groupName, String memberName) throws KeeperException, InterruptedException {
         String path = "/" + groupName + "/" + memberName;
@@ -14,7 +17,7 @@ public class JoinGroup extends ConnectionWatcher {
                 null/*data*/,
                 ZooDefs.Ids.OPEN_ACL_UNSAFE,
                 CreateMode.EPHEMERAL);
-        System.out.println("Created " + createdPath);
+        LOG.info("Created {}", createdPath);
     }
 
     public static void main(String[] args) throws Exception {
