@@ -21,13 +21,14 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Stat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.apache.zookeeper.CreateMode.EPHEMERAL_SEQUENTIAL;
 
@@ -41,7 +42,7 @@ import static org.apache.zookeeper.CreateMode.EPHEMERAL_SEQUENTIAL;
  *
  */
 public class WriteLock extends ProtocolSupport {
-    private static final Logger LOG = Logger.getLogger(WriteLock.class);
+    private static final Logger LOG = LoggerFactory.getLogger(WriteLock.class);
 
     private final String dir;
     private String id;
@@ -112,27 +113,26 @@ public class WriteLock extends ProtocolSupport {
             // as ZK will remove ephemeral files and we don't wanna hang
             // this process when closing if we cannot reconnect to ZK
             try {
-                
+
                 ZooKeeperOperation zopdel = new ZooKeeperOperation() {
                     public boolean execute() throws KeeperException,
-                        InterruptedException {
-                        zookeeper.delete(id, -1);   
+                            InterruptedException {
+                        zookeeper.delete(id, -1);
                         return Boolean.TRUE;
                     }
                 };
                 zopdel.execute();
             } catch (InterruptedException e) {
-                LOG.warn("Caught: " + e, e);
+                LOG.warn("Interrupted", e);
                 //set that we have been interrupted.
-               Thread.currentThread().interrupt();
+                Thread.currentThread().interrupt();
             } catch (KeeperException.NoNodeException e) {
                 // do nothing
+                LOG.trace("No node", e);
             } catch (KeeperException e) {
-                LOG.warn("Caught: " + e, e);
-                throw (RuntimeException) new RuntimeException(e.getMessage()).
-                    initCause(e);
-            }
-            finally {
+                LOG.warn("KeeperException: {}", e.code(), e);
+                throw new RuntimeException(e.getMessage(), e);
+            } finally {
                 if (callback != null) {
                     callback.lockReleased();
                 }

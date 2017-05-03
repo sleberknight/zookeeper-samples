@@ -53,7 +53,7 @@ class ZNodeName implements Comparable<ZNodeName> {
 
     @Override
     public String toString() {
-        return name.toString();
+        return name;
     }
 
     @Override
