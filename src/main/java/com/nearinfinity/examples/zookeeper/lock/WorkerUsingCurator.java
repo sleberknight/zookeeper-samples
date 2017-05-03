@@ -21,6 +21,9 @@ public class WorkerUsingCurator {
 
     private static final long DEFAULT_WAIT_TIME_SECONDS = Long.MAX_VALUE;
 
+    private WorkerUsingCurator() {
+    }
+
     public static void main(String[] args) throws Exception {
         String hosts = args[0];
         String lockPath = args[1];

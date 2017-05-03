@@ -23,6 +23,9 @@ public class TransactionExample {
 
     private static final Logger LOG = LoggerFactory.getLogger(TransactionExample.class);
 
+    private TransactionExample() {
+    }
+
     public static void main(String[] args) throws IOException, InterruptedException, KeeperException {
         if (args.length < 4) {
             LOG.info("Usage: {} <zk-connection-string> <parent-znode> <child-znode-1> <child-znode-2> [<child-znode-n> ...]",

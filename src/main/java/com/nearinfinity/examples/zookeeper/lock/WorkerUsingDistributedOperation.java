@@ -18,6 +18,9 @@ public class WorkerUsingDistributedOperation {
 
     private static final Logger LOG = LoggerFactory.getLogger(WorkerUsingDistributedOperation.class);
 
+    private WorkerUsingDistributedOperation() {
+    }
+
     public static void main(String[] args) throws IOException, InterruptedException, KeeperException {
         final String hosts = args[0];
         final String path = args[1];

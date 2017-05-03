@@ -14,6 +14,9 @@ public class WorkerUsingBlockingWriteLock {
 
     private static final Logger LOG = LoggerFactory.getLogger(WorkerUsingBlockingWriteLock.class);
 
+    private WorkerUsingBlockingWriteLock() {
+    }
+
     public static void main(String[] args) throws Exception {
         String hosts = args[0];
         String path = args[1];

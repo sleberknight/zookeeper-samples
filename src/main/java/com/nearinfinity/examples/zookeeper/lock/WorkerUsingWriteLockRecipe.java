@@ -20,6 +20,9 @@ public class WorkerUsingWriteLockRecipe {
 
     private static CountDownLatch _workDoneSignal = new CountDownLatch(1);
 
+    private WorkerUsingWriteLockRecipe() {
+    }
+
     public static void main(String[] args) throws Exception {
         String hosts = args[0];
         String path = args[1];
