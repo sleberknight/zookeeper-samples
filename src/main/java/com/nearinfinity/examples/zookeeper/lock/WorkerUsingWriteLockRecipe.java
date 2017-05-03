@@ -46,7 +46,7 @@ public class WorkerUsingWriteLockRecipe {
 
     private static void doSomeWork(String name) {
         int seconds = new RandomAmountOfWork().timeItWillTake();
-        long workTimeMillis = seconds * 1000;
+        long workTimeMillis = seconds * 1000L;
         LOG.info("{} is doing some work for {} seconds", name, seconds);
         try {
             Thread.sleep(workTimeMillis);

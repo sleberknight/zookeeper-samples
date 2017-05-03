@@ -34,7 +34,7 @@ public class WorkerUsingDistributedOperation {
                     @Override
                     public Void execute() {
                         int seconds = new RandomAmountOfWork().timeItWillTake();
-                        long workTimeMillis = seconds * 1000;
+                        long workTimeMillis = seconds * 1000L;
                         LOG.info("{} is doing some work for {} seconds", myName, seconds);
                         try {
                             Thread.sleep(workTimeMillis);
