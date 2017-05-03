@@ -18,7 +18,7 @@ public class WorkerUsingWriteLockRecipe {
 
     private static final Logger LOG = LoggerFactory.getLogger(WorkerUsingWriteLockRecipe.class);
 
-    private static CountDownLatch _workDoneSignal = new CountDownLatch(1);
+    private static CountDownLatch workDoneSignal = new CountDownLatch(1);
 
     private WorkerUsingWriteLockRecipe() {
     }
@@ -38,7 +38,7 @@ public class WorkerUsingWriteLockRecipe {
         if (!gotLockImmediately) {
             LOG.info("{} waiting for lock...", myName);
         }
-        _workDoneSignal.await();
+        workDoneSignal.await();
 
         LOG.info("Work done signal was sent. {} is unlocking the lock", myName);
         lock.unlock();  // Does not need to be in a finally. Why? (hint: we're in a main method)
@@ -57,7 +57,7 @@ public class WorkerUsingWriteLockRecipe {
             LOG.info("Lock acquired by {}", _workerName);
             doSomeWork(_workerName);
             LOG.info("{} is now done doing work", _workerName);
-            _workDoneSignal.countDown();
+            workDoneSignal.countDown();
         }
 
         @Override
