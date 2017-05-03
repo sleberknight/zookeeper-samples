@@ -8,6 +8,7 @@ import java.util.concurrent.Semaphore;
 
 import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
@@ -49,6 +50,7 @@ public class GroupMembershipIterable implements Iterable<List<String>> {
                     _semaphore.acquire();
                     return _zooKeeper.exists(_groupPath, false) != null;
                 } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                     throw new RuntimeException(e);
                 } catch (KeeperException e) {
                     throw new RuntimeException(e);
@@ -60,6 +62,7 @@ public class GroupMembershipIterable implements Iterable<List<String>> {
                 try {
                     return list(_groupName);
                 } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                     throw new RuntimeException(e);
                 } catch (KeeperException e) {
                     throw new RuntimeException(e);
@@ -76,14 +79,20 @@ public class GroupMembershipIterable implements Iterable<List<String>> {
     private List<String> list(final String groupName) throws KeeperException, InterruptedException {
         String path = pathFor(groupName);
         List<String> children = _zooKeeper.getChildren(path, event -> {
-            if (event.getType() == Watcher.Event.EventType.NodeChildrenChanged) {
-                _semaphore.release();
-            } else if (event.getType() == Watcher.Event.EventType.NodeDeleted && event.getPath().equals(_groupPath)) {
+            if (isNodeChildrenChangedEvent(event) || isNodeDeletedEventForGroup(event)) {
                 _semaphore.release();
             }
         });
         Collections.sort(children);
         return children;
+    }
+
+    private boolean isNodeChildrenChangedEvent(WatchedEvent event) {
+        return event.getType() == Watcher.Event.EventType.NodeChildrenChanged;
+    }
+
+    private boolean isNodeDeletedEventForGroup(WatchedEvent event) {
+        return event.getType() == Watcher.Event.EventType.NodeDeleted && event.getPath().equals(_groupPath);
     }
 
     private String pathFor(String groupName) {
