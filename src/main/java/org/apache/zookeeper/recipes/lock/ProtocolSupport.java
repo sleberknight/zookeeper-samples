@@ -29,7 +29,11 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.Objects.isNull;
+
 /**
+ * Copied directly from the ZooKeeper lock recipe, and modified slightly (e.g. for Sonar rule violations).
+ *
  * A base class for protocol implementations which provides a number of higher 
  * level helper methods for working with ZooKeeper along with retrying synchronous
  *  operations if the connection to ZooKeeper closes such as 
@@ -100,10 +104,11 @@ class ProtocolSupport {
     }
 
     /**
-     * Allow derived classes to perform 
+     * Allow derived classes to perform
      * some custom closing operations to release resources
      */
     protected void doClose() {
+        // no-op
     }
 
 
@@ -119,16 +124,19 @@ class ProtocolSupport {
             try {
                 return operation.execute();
             } catch (KeeperException.SessionExpiredException e) {
-                LOG.warn("Session expired for: " + zookeeper + " so reconnecting due to: " + e, e);
+                LOG.warn("Session expired for: {} so reconnecting", zookeeper, e);
                 throw e;
             } catch (KeeperException.ConnectionLossException e) {
                 if (exception == null) {
                     exception = e;
                 }
-                LOG.debug("Attempt " + i + " failed with connection loss so " +
-                		"attempting to reconnect: " + e, e);
+                LOG.debug("Attempt {} failed with connection loss so attempting to reconnect", i, e);
                 retryDelay(i);
             }
+        }
+
+        if (isNull(exception)) {
+            throw new IllegalStateException("The KeeperException was (unexpectedly) null; cannot throw it!");
         }
         throw exception;
     }
@@ -162,9 +170,10 @@ class ProtocolSupport {
                 }
             });
         } catch (KeeperException e) {
-            LOG.warn("Caught: " + e, e);
+            LOG.warn("Caught KeeperException: {}", e.code(), e);
         } catch (InterruptedException e) {
-            LOG.warn("Caught: " + e, e);
+            LOG.warn("Interrupted", e);
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -185,7 +194,8 @@ class ProtocolSupport {
             try {
                 Thread.sleep(attemptCount * retryDelay);
             } catch (InterruptedException e) {
-                LOG.debug("Failed to sleep: " + e, e);
+                LOG.debug("Failed to sleep", e);
+                Thread.currentThread().interrupt();
             }
         }
     }
