@@ -214,8 +214,7 @@ public class WriteLock extends ProtocolSupport {
                 if (id != null) {
                     List<String> names = zookeeper.getChildren(dir, false);
                     if (names.isEmpty()) {
-                        LOG.warn("No children in: " + dir + " when we've just " +
-                        "created one! Lets recreate it...");
+                        LOG.warn("No children in: {} when we've just created one! Lets recreate it...", dir);
                         // lets force the recreation of the id
                         id = null;
                     } else {
