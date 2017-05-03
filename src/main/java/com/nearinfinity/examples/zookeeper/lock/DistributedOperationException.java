@@ -1,7 +1,9 @@
 package com.nearinfinity.examples.zookeeper.lock;
 
+@SuppressWarnings("unused")
 public class DistributedOperationException extends RuntimeException {
     public DistributedOperationException() {
+        super();
     }
 
     public DistributedOperationException(String message) {
