@@ -28,7 +28,7 @@ public class ListGroupForever {
         new ListGroupForever(zk).listForever(args[1]);
     }
 
-    @SuppressWarnings("squid:S2189")
+    @SuppressWarnings({"squid:S2189", "InfiniteLoopStatement"})
     public void listForever(String groupName) throws KeeperException, InterruptedException {
         semaphore.acquire();
         while (true) {
