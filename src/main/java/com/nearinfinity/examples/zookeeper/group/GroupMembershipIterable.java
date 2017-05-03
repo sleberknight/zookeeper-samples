@@ -18,10 +18,10 @@ public class GroupMembershipIterable implements Iterable<List<String>> {
 
     private static final Logger LOG = LoggerFactory.getLogger(GroupMembershipIterable.class);
 
-    private ZooKeeper _zooKeeper;
-    private String _groupName;
-    private String _groupPath;
-    private Semaphore _semaphore = new Semaphore(1);
+    private ZooKeeper zooKeeper;
+    private String groupName;
+    private String groupPath;
+    private Semaphore semaphore = new Semaphore(1);
 
     public static void main(String[] args) throws IOException, InterruptedException {
         ZooKeeper zk = new ConnectionHelper().connect(args[0]);
@@ -36,9 +36,9 @@ public class GroupMembershipIterable implements Iterable<List<String>> {
     }
 
     public GroupMembershipIterable(ZooKeeper zooKeeper, String groupName) {
-        _zooKeeper = zooKeeper;
-        _groupName = groupName;
-        _groupPath = pathFor(groupName);
+        this.zooKeeper = zooKeeper;
+        this.groupName = groupName;
+        groupPath = pathFor(groupName);
     }
 
     @Override
@@ -47,8 +47,8 @@ public class GroupMembershipIterable implements Iterable<List<String>> {
             @Override
             public boolean hasNext() {
                 try {
-                    _semaphore.acquire();
-                    return _zooKeeper.exists(_groupPath, false) != null;
+                    semaphore.acquire();
+                    return zooKeeper.exists(groupPath, false) != null;
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     throw new RuntimeException(e);
@@ -60,7 +60,7 @@ public class GroupMembershipIterable implements Iterable<List<String>> {
             @Override
             public List<String> next() {
                 try {
-                    return list(_groupName);
+                    return list(groupName);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     throw new RuntimeException(e);
@@ -78,9 +78,9 @@ public class GroupMembershipIterable implements Iterable<List<String>> {
 
     private List<String> list(final String groupName) throws KeeperException, InterruptedException {
         String path = pathFor(groupName);
-        List<String> children = _zooKeeper.getChildren(path, event -> {
+        List<String> children = zooKeeper.getChildren(path, event -> {
             if (isNodeChildrenChangedEvent(event) || isNodeDeletedEventForGroup(event)) {
-                _semaphore.release();
+                semaphore.release();
             }
         });
         Collections.sort(children);
@@ -92,7 +92,7 @@ public class GroupMembershipIterable implements Iterable<List<String>> {
     }
 
     private boolean isNodeDeletedEventForGroup(WatchedEvent event) {
-        return event.getType() == Watcher.Event.EventType.NodeDeleted && event.getPath().equals(_groupPath);
+        return event.getType() == Watcher.Event.EventType.NodeDeleted && event.getPath().equals(groupPath);
     }
 
     private String pathFor(String groupName) {

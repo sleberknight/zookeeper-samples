@@ -18,25 +18,25 @@ public class CreateGroup implements Watcher {
     private static final Logger LOG = LoggerFactory.getLogger(CreateGroup.class);
 
     private static final int SESSION_TIMEOUT = 5000;
-    private ZooKeeper _zk;
-    private CountDownLatch _connectedSignal = new CountDownLatch(1);
+    private ZooKeeper zk;
+    private CountDownLatch connectedSignal = new CountDownLatch(1);
 
     public void connect(String hosts) throws IOException, InterruptedException {
-        _zk = new ZooKeeper(hosts, SESSION_TIMEOUT, this);
-        _connectedSignal.await();
+        zk = new ZooKeeper(hosts, SESSION_TIMEOUT, this);
+        connectedSignal.await();
     }
 
     @Override
     public void process(WatchedEvent event) { // Watcher interface
         if (event.getState() == Event.KeeperState.SyncConnected) {
             LOG.info("Connected...");
-            _connectedSignal.countDown();
+            connectedSignal.countDown();
         }
     }
 
     public void create(String groupName) throws KeeperException, InterruptedException {
         String path = MoreZKPaths.makeAbsolutePath(groupName);
-        String createdPath = _zk.create(path,
+        String createdPath = zk.create(path,
                 null /*data*/,
                 ZooDefs.Ids.OPEN_ACL_UNSAFE,
                 CreateMode.PERSISTENT);
@@ -44,7 +44,7 @@ public class CreateGroup implements Watcher {
     }
 
     public void close() throws InterruptedException {
-        _zk.close();
+        zk.close();
     }
 
     public static void main(String[] args) throws Exception {

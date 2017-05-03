@@ -12,15 +12,15 @@ public class ConfigWatcher implements Watcher {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigWatcher.class);
 
-    private ActiveKeyValueStore _store;
+    private ActiveKeyValueStore store;
 
     public ConfigWatcher(String hosts) throws InterruptedException, IOException {
-        _store = new ActiveKeyValueStore();
-        _store.connect(hosts);
+        store = new ActiveKeyValueStore();
+        store.connect(hosts);
     }
 
     public void displayConfig() throws InterruptedException, KeeperException {
-        String value = _store.read(ConfigUpdater.PATH, this);
+        String value = store.read(ConfigUpdater.PATH, this);
         LOG.info("Read {} as {}", ConfigUpdater.PATH, value);
     }
 

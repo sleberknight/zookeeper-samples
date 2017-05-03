@@ -17,10 +17,10 @@ public class BlockingWriteLock {
 
     private static final Logger LOG = LoggerFactory.getLogger(BlockingWriteLock.class);
 
-    private String _name;
-    private String _path;
-    private WriteLock _writeLock;
-    private CountDownLatch _lockAcquiredSignal = new CountDownLatch(1);
+    private String name;
+    private String path;
+    private WriteLock writeLock;
+    private CountDownLatch lockAcquiredSignal = new CountDownLatch(1);
 
     private static final List<ACL> DEFAULT_ACL = ZooDefs.Ids.OPEN_ACL_UNSAFE;
 
@@ -29,21 +29,21 @@ public class BlockingWriteLock {
     }
 
     public BlockingWriteLock(String name, ZooKeeper zookeeper, String path, List<ACL> acl) {
-        _name = name;
-        _path = path;
-        _writeLock = new WriteLock(zookeeper, path, acl, new SyncLockListener());
+        this.name = name;
+        this.path = path;
+        writeLock = new WriteLock(zookeeper, path, acl, new SyncLockListener());
     }
 
     public void lock() throws InterruptedException, KeeperException {
-        LOG.debug("{} requesting lock on {}...", _name, _path);
-        _writeLock.lock();
-        _lockAcquiredSignal.await();
+        LOG.debug("{} requesting lock on {}...", name, path);
+        writeLock.lock();
+        lockAcquiredSignal.await();
     }
 
     public boolean lock(long timeout, TimeUnit unit) throws InterruptedException, KeeperException {
-        LOG.debug("{} requesting lock on {} with timeout {} {}...", _name, _path, timeout, unit);
-        _writeLock.lock();
-        return _lockAcquiredSignal.await(timeout, unit);
+        LOG.debug("{} requesting lock on {} with timeout {} {}...", name, path, timeout, unit);
+        writeLock.lock();
+        return lockAcquiredSignal.await(timeout, unit);
     }
 
     public boolean tryLock() throws InterruptedException, KeeperException {
@@ -51,20 +51,20 @@ public class BlockingWriteLock {
     }
 
     public void unlock() {
-        _writeLock.unlock();
+        writeLock.unlock();
     }
 
     class SyncLockListener implements LockListener {
 
         @Override
         public void lockAcquired() {
-            LOG.debug("Lock acquired by {} on {}", _name, _path);
-            _lockAcquiredSignal.countDown();
+            LOG.debug("Lock acquired by {} on {}", name, path);
+            lockAcquiredSignal.countDown();
         }
 
         @Override
         public void lockReleased() {
-            LOG.debug("Lock released by {} on {}", _name, _path);
+            LOG.debug("Lock released by {} on {}", name, path);
         }
     }
 }

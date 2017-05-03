@@ -19,9 +19,9 @@ public class LockWatcher implements Watcher {
 
     private static final Logger LOG = LoggerFactory.getLogger(LockWatcher.class);
 
-    private ZooKeeper _zk;
-    private String _lockPath;
-    private Semaphore _semaphore = new Semaphore(1);
+    private ZooKeeper zk;
+    private String lockPath;
+    private Semaphore semaphore = new Semaphore(1);
 
     public static void main(String[] args) throws IOException, InterruptedException, KeeperException {
         String hosts = args[0];
@@ -35,22 +35,22 @@ public class LockWatcher implements Watcher {
     }
 
     public LockWatcher(ZooKeeper zk, String lockPath) throws InterruptedException, KeeperException {
-        _zk = zk;
-        _lockPath = lockPath;
+        this.zk = zk;
+        this.lockPath = lockPath;
         ensureLockPathExists(zk, lockPath);
     }
 
     @SuppressWarnings("squid:S2189")
     public void watch() throws InterruptedException, KeeperException {
         LOG.info("Acquire initial semaphore");
-        _semaphore.acquire();
+        semaphore.acquire();
 
         // noinspection InfiniteLoopStatement
         while (true) {
-            LOG.info("Getting children for lock path {}", _lockPath);
-            List<String> children = _zk.getChildren(_lockPath, this);
+            LOG.info("Getting children for lock path {}", lockPath);
+            List<String> children = zk.getChildren(lockPath, this);
             printChildren(children);
-            _semaphore.acquire();
+            semaphore.acquire();
         }
     }
 
@@ -58,7 +58,7 @@ public class LockWatcher implements Watcher {
     public void process(WatchedEvent event) {
         if (event.getType() == Event.EventType.NodeChildrenChanged) {
             LOG.info("Received {} event", Event.EventType.NodeChildrenChanged);
-            _semaphore.release();
+            semaphore.release();
         }
     }
 
@@ -74,7 +74,7 @@ public class LockWatcher implements Watcher {
 
     private void printChildren(List<String> children) {
         if (children.isEmpty()) {
-            LOG.info("No one has the lock on {} at the moment...", _lockPath);
+            LOG.info("No one has the lock on {} at the moment...", lockPath);
             return;
         }
 

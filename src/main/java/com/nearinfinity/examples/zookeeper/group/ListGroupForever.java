@@ -16,11 +16,11 @@ public class ListGroupForever {
 
     private static final Logger LOG = LoggerFactory.getLogger(ListGroupForever.class);
 
-    private ZooKeeper _zooKeeper;
-    private Semaphore _semaphore = new Semaphore(1);
+    private ZooKeeper zooKeeper;
+    private Semaphore semaphore = new Semaphore(1);
 
     public ListGroupForever(ZooKeeper zooKeeper) {
-        _zooKeeper = zooKeeper;
+        this.zooKeeper = zooKeeper;
     }
 
     public static void main(String[] args) throws Exception {
@@ -30,19 +30,19 @@ public class ListGroupForever {
 
     @SuppressWarnings("squid:S2189")
     public void listForever(String groupName) throws KeeperException, InterruptedException {
-        _semaphore.acquire();
+        semaphore.acquire();
         while (true) {
             list(groupName);
-            _semaphore.acquire();
+            semaphore.acquire();
         }
     }
 
     private void list(String groupName) throws KeeperException, InterruptedException {
         String path = MoreZKPaths.makeAbsolutePath(groupName);
 
-        List<String> children = _zooKeeper.getChildren(path, event -> {
+        List<String> children = zooKeeper.getChildren(path, event -> {
             if (event.getType() == Watcher.Event.EventType.NodeChildrenChanged) {
-                _semaphore.release();
+                semaphore.release();
             }
         });
         if (children.isEmpty()) {

@@ -15,22 +15,22 @@ public class ConfigUpdater {
 
     public static final String PATH = MoreZKPaths.makeAbsolutePath("config");
 
-    private ActiveKeyValueStore _store;
-    private Random _random = new Random();
+    private ActiveKeyValueStore store;
+    private Random random = new Random();
 
     public ConfigUpdater(String hosts) throws IOException, InterruptedException {
-        _store = new ActiveKeyValueStore();
-        _store.connect(hosts);
+        store = new ActiveKeyValueStore();
+        store.connect(hosts);
     }
 
     @SuppressWarnings("squid:S2189")
     public void run() throws InterruptedException, KeeperException {
         //noinspection InfiniteLoopStatement
         while (true) {
-            int value = _random.nextInt(100);
-            _store.write(PATH, Integer.toString(value));
+            int value = random.nextInt(100);
+            store.write(PATH, Integer.toString(value));
             LOG.info("Set {} to {}", PATH, value);
-            TimeUnit.SECONDS.sleep(_random.nextInt(10));
+            TimeUnit.SECONDS.sleep(random.nextInt(10));
         }
     }
 
