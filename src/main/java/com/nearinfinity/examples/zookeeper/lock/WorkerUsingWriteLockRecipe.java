@@ -44,18 +44,6 @@ public class WorkerUsingWriteLockRecipe {
         lock.unlock();  // Does not need to be in a finally. Why? (hint: we're in a main method)
     }
 
-    private static void doSomeWork(String name) {
-        int seconds = new RandomAmountOfWork().timeItWillTake();
-        long workTimeMillis = seconds * 1000L;
-        LOG.info("{} is doing some work for {} seconds", name, seconds);
-        try {
-            Thread.sleep(workTimeMillis);
-        } catch (InterruptedException ex) {
-            LOG.error("Oops. Interrupted.", ex);
-            Thread.currentThread().interrupt();
-        }
-    }
-
     static class WorkerLockListener implements LockListener {
 
         private String _workerName;
@@ -75,6 +63,18 @@ public class WorkerUsingWriteLockRecipe {
         @Override
         public void lockReleased() {
             LOG.info("Lock released by {}", _workerName);
+        }
+
+        private static void doSomeWork(String name) {
+            int seconds = new RandomAmountOfWork().timeItWillTake();
+            long workTimeMillis = seconds * 1000L;
+            LOG.info("{} is doing some work for {} seconds", name, seconds);
+            try {
+                Thread.sleep(workTimeMillis);
+            } catch (InterruptedException ex) {
+                LOG.error("Oops. Interrupted.", ex);
+                Thread.currentThread().interrupt();
+            }
         }
     }
 }
