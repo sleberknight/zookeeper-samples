@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
+import com.nearinfinity.examples.zookeeper.util.MoreZKPaths;
+import org.apache.curator.utils.ZKPaths;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.OpResult;
@@ -35,20 +37,20 @@ public class TransactionExample {
 
         ZooKeeper zooKeeper = new ConnectionHelper().connect(args[0]);
 
-        String topZnodePath = "/txn-examples";
+        String topZnodePath = MoreZKPaths.makeAbsolutePath("txn-examples");
         if (zooKeeper.exists(topZnodePath, false) == null) {
             LOG.info("Creating top level znode {} for transaction examples", topZnodePath);
             zooKeeper.create(topZnodePath, null, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
         }
 
-        String baseParentPath = topZnodePath + "/" + args[1] + "-";
+        String baseParentPath = ZKPaths.makePath(topZnodePath, args[1] + "-");
         String parentPath = zooKeeper.create(baseParentPath, null, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL);
         LOG.info("Created parent znode {}", parentPath);
 
         List<String> childPaths = new ArrayList<>(args.length - 2);
         Transaction txn = zooKeeper.transaction();
         for (int i = 2; i < args.length; i++) {
-            String childPath = parentPath + "/" + args[i];
+            String childPath = ZKPaths.makePath(parentPath, args[i]);
             childPaths.add(childPath);
             LOG.info("Adding create op with child path {}", childPath);
             txn.create(childPath, null, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);

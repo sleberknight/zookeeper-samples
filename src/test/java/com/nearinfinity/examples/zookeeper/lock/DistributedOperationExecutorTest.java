@@ -67,12 +67,9 @@ public class DistributedOperationExecutorTest {
     @Test
     public void testWithLock() throws InterruptedException, KeeperException {
         assertThat(_zooKeeper.exists(_testLockPath, false), is(nullValue()));
-        _executor.withLock("Test Lock", _testLockPath, new DistributedOperation<Void>() {
-            @Override
-            public Void execute() throws DistributedOperationException {
-                assertNumberOfChildren(_zooKeeper, _testLockPath, 1);
-                return null;
-            }
+        _executor.withLock("Test Lock", _testLockPath, () -> {
+            assertNumberOfChildren(_zooKeeper, _testLockPath, 1);
+            return null;
         });
         assertNumberOfChildren(_zooKeeper, _testLockPath, 0);
     }
@@ -82,12 +79,7 @@ public class DistributedOperationExecutorTest {
         assertThat(_zooKeeper.exists(_testLockPath, false), is(nullValue()));
         final String opResult = "success";
         DistributedOperationResult<String> result = _executor.withLock("Test Lock w/Timeout", _testLockPath,
-                new DistributedOperation<String>() {
-                    @Override
-                    public String execute() throws DistributedOperationException {
-                        return opResult;
-                    }
-                }, 10, TimeUnit.SECONDS);
+                () -> opResult, 10, TimeUnit.SECONDS);
         assertThat(result.timedOut, is(false));
         assertThat(result.result, is(opResult));
     }
@@ -97,12 +89,7 @@ public class DistributedOperationExecutorTest {
         assertThat(_zooKeeper.exists(_testLockPath, false), is(nullValue()));
         final String opResult = "success";
         DistributedOperationResult<String> result = _executor.withLock("Test Lock w/Timeout", _testLockPath, ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                new DistributedOperation<String>() {
-                    @Override
-                    public String execute() throws DistributedOperationException {
-                        return opResult;
-                    }
-                }, 10, TimeUnit.SECONDS);
+                () -> opResult, 10, TimeUnit.SECONDS);
         assertThat(result.timedOut, is(false));
         assertThat(result.result, is(opResult));
     }
@@ -117,14 +104,15 @@ public class DistributedOperationExecutorTest {
                 new TestDistOp("op-4")
         );
 
-        List<Thread> opThreads = new ArrayList<Thread>();
+        List<Thread> opThreads = new ArrayList<>();
         for (TestDistOp op : ops) {
             opThreads.add(launchDistributedOperation(op));
             Thread.sleep(10);
         }
 
+        long maxWaitTimeMillis = TimeUnit.SECONDS.toMillis(5);
         for (Thread opThread : opThreads) {
-            opThread.join();
+            opThread.join(maxWaitTimeMillis);
         }
 
         assertThat(TestDistOp.callCount.get(), is(ops.size()));
@@ -134,14 +122,11 @@ public class DistributedOperationExecutorTest {
     }
 
     private Thread launchDistributedOperation(final TestDistOp op) {
-        Thread opThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    _executor.withLock(op.name, _testLockPath, op);
-                } catch (Exception ex) {
-                    throw new DistributedOperationException(ex);
-                }
+        Thread opThread = new Thread(() -> {
+            try {
+                _executor.withLock(op.name, _testLockPath, op);
+            } catch (Exception ex) {
+                throw new DistributedOperationException(ex);
             }
         });
         opThread.start();

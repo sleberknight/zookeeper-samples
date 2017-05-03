@@ -3,6 +3,7 @@ package com.nearinfinity.examples.zookeeper.group;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
+import com.nearinfinity.examples.zookeeper.util.MoreZKPaths;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
@@ -34,7 +35,7 @@ public class CreateGroup implements Watcher {
     }
 
     public void create(String groupName) throws KeeperException, InterruptedException {
-        String path = "/" + groupName;
+        String path = MoreZKPaths.makeAbsolutePath(groupName);
         String createdPath = _zk.create(path,
                 null /*data*/,
                 ZooDefs.Ids.OPEN_ACL_UNSAFE,

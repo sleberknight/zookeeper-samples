@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import com.nearinfinity.examples.zookeeper.util.MoreZKPaths;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +13,7 @@ public class ConfigUpdater {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigUpdater.class);
 
-    public static final String PATH = "/config";
+    public static final String PATH = MoreZKPaths.makeAbsolutePath("config");
 
     private ActiveKeyValueStore _store;
     private Random _random = new Random();

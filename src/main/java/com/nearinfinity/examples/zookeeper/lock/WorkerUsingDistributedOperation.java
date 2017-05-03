@@ -30,20 +30,17 @@ public class WorkerUsingDistributedOperation {
         ZooKeeper zooKeeper = connectionHelper.connect(hosts);
 
         new DistributedOperationExecutor(zooKeeper).withLock(myName, path, ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                new DistributedOperation<Void>() {
-                    @Override
-                    public Void execute() {
-                        int seconds = new RandomAmountOfWork().timeItWillTake();
-                        long workTimeMillis = seconds * 1000L;
-                        LOG.info("{} is doing some work for {} seconds", myName, seconds);
-                        try {
-                            Thread.sleep(workTimeMillis);
-                        } catch (InterruptedException ex) {
-                            LOG.error("Oops. Interrupted.", ex);
-                            Thread.currentThread().interrupt();
-                        }
-                        return null;
+                () -> {
+                    int seconds = new RandomAmountOfWork().timeItWillTake();
+                    long workTimeMillis = seconds * 1000L;
+                    LOG.info("{} is doing some work for {} seconds", myName, seconds);
+                    try {
+                        Thread.sleep(workTimeMillis);
+                    } catch (InterruptedException ex) {
+                        LOG.error("Oops. Interrupted.", ex);
+                        Thread.currentThread().interrupt();
                     }
+                    return null;
                 }
         );
     }

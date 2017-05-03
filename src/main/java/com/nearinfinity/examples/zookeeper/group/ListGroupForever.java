@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 
 import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
+import com.nearinfinity.examples.zookeeper.util.MoreZKPaths;
 import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
@@ -38,14 +38,11 @@ public class ListGroupForever {
     }
 
     private void list(String groupName) throws KeeperException, InterruptedException {
-        String path = "/" + groupName;
+        String path = MoreZKPaths.makeAbsolutePath(groupName);
 
-        List<String> children = _zooKeeper.getChildren(path, new Watcher() {
-            @Override
-            public void process(WatchedEvent event) {
-                if (event.getType() == Event.EventType.NodeChildrenChanged) {
-                    _semaphore.release();
-                }
+        List<String> children = _zooKeeper.getChildren(path, event -> {
+            if (event.getType() == Watcher.Event.EventType.NodeChildrenChanged) {
+                _semaphore.release();
             }
         });
         if (children.isEmpty()) {

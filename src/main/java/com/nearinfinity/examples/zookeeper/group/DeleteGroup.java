@@ -3,6 +3,7 @@ package com.nearinfinity.examples.zookeeper.group;
 import java.util.List;
 
 import com.nearinfinity.examples.zookeeper.util.ConnectionWatcher;
+import com.nearinfinity.examples.zookeeper.util.MoreZKPaths;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +13,7 @@ public class DeleteGroup extends ConnectionWatcher {
     private static final Logger LOG = LoggerFactory.getLogger(DeleteGroup.class);
 
     public void delete(String groupName) throws KeeperException, InterruptedException {
-        String path = "/" + groupName;
+        String path = MoreZKPaths.makeAbsolutePath(groupName);
 
         try {
             List<String> children = zk.getChildren(path, false);
