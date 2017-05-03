@@ -44,6 +44,11 @@ public class GroupMembershipIterable implements Iterable<List<String>> {
     @Override
     public Iterator<List<String>> iterator() {
         return new Iterator<List<String>>() {
+
+            /**
+             * Attempts to acquire the semaphore. Once acquired, returns true if the group node still exists, otherwise
+             * false is the group znode has been deleted.
+             */
             @Override
             public boolean hasNext() {
                 try {
@@ -57,6 +62,17 @@ public class GroupMembershipIterable implements Iterable<List<String>> {
                 }
             }
 
+            /**
+             * Lists the group contents, setting a watch. When either the node children change, or the group node
+             * is deleted, the semaphore acquired in {@link #hasNext()} is released.
+             *
+             * @implNote Suppressed Sonar warning: "Iterator.next()" methods should throw "NoSuchElementException"
+             * because with this implementation (which maybe is not a good design...) if hasNext() is called, it acquires
+             * the semaphore, then if next() is called and it calls hasNext() again, then it will block trying to
+             * acquire the semaphore - in fact it will block indefinitely and never acquire it, because the code will
+             * never get into the list() method where the release occurs.
+             */
+            @SuppressWarnings("squid:S2272")
             @Override
             public List<String> next() {
                 try {
