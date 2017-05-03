@@ -45,7 +45,7 @@ public class TransactionExample {
         String parentPath = zooKeeper.create(baseParentPath, null, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL);
         LOG.info("Created parent znode {}", parentPath);
 
-        List<String> childPaths = new ArrayList<String>(args.length - 2);
+        List<String> childPaths = new ArrayList<>(args.length - 2);
         Transaction txn = zooKeeper.transaction();
         for (int i = 2; i < args.length; i++) {
             String childPath = parentPath + "/" + args[i];

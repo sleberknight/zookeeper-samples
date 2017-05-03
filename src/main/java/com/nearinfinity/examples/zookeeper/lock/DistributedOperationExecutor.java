@@ -16,7 +16,7 @@ public class DistributedOperationExecutor {
         _zk = zk;
     }
 
-    public static final List<ACL> DEFAULT_ACL = ZooDefs.Ids.OPEN_ACL_UNSAFE;
+    private static final List<ACL> DEFAULT_ACL = ZooDefs.Ids.OPEN_ACL_UNSAFE;
 
     public <T> T withLock(String name, String lockPath, DistributedOperation<T> op)
             throws InterruptedException, KeeperException {
@@ -58,9 +58,9 @@ public class DistributedOperationExecutor {
         try {
             boolean lockObtained = lock.lock(timeout, unit);
             if (lockObtained) {
-                return new DistributedOperationResult<T>(false, op.execute());
+                return new DistributedOperationResult<>(false, op.execute());
             }
-            return new DistributedOperationResult<T>(true, null);
+            return new DistributedOperationResult<>(true, null);
         } finally {
             lock.unlock();
         }

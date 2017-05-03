@@ -17,18 +17,19 @@
  */
 package org.apache.zookeeper.recipes.lock;
 
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
-import static org.apache.zookeeper.CreateMode.EPHEMERAL_SEQUENTIAL;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Stat;
 
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import static org.apache.zookeeper.CreateMode.EPHEMERAL_SEQUENTIAL;
 
 /**
  * A <a href="package.html">protocol to implement an exclusive
@@ -219,7 +220,7 @@ public class WriteLock extends ProtocolSupport {
                         id = null;
                     } else {
                         // lets sort them explicitly (though they do seem to come back in order ususally :)
-                        SortedSet<ZNodeName> sortedNames = new TreeSet<ZNodeName>();
+                        SortedSet<ZNodeName> sortedNames = new TreeSet<>();
                         for (String name : names) {
                             sortedNames.add(new ZNodeName(dir + "/" + name));
                         }
