@@ -3,7 +3,6 @@ package com.nearinfinity.examples.zookeeper.misc;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
-import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
@@ -17,12 +16,9 @@ public class ConnectingExample {
 
     public ZooKeeper connect(String hosts) throws IOException, InterruptedException {
         final CountDownLatch signal = new CountDownLatch(1);
-        ZooKeeper zk = new ZooKeeper(hosts, SESSION_TIMEOUT, new Watcher() {
-            @Override
-            public void process(WatchedEvent event) {
-                if (event.getState() == Event.KeeperState.SyncConnected) {
-                    signal.countDown();
-                }
+        ZooKeeper zk = new ZooKeeper(hosts, SESSION_TIMEOUT, event -> {
+            if (event.getState() == Watcher.Event.KeeperState.SyncConnected) {
+                signal.countDown();
             }
         });
         signal.await();

@@ -1,10 +1,8 @@
 package com.nearinfinity.examples.zookeeper.group;
 
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import com.nearinfinity.examples.zookeeper.util.ConnectionWatcher;
-import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,23 +25,20 @@ public class AsyncListGroup extends ConnectionWatcher {
         // go off and do other things without blocking like this example does.
         final CountDownLatch latch = new CountDownLatch(1);
         zk.getChildren(path, false,
-                new AsyncCallback.ChildrenCallback() {
-                    @Override
-                    public void processResult(int rc, String path, Object ctx, List<String> children) {
-                        LOG.info("Called back for path {} with return code {}", path, rc);
-                        if (children == null) {
-                            LOG.info("Group {} does not exist", groupName);
-                        } else {
-                            if (children.isEmpty()) {
-                                LOG.info("No members in group {}", groupName);
-                                return;
-                            }
-                            for (String child : children) {
-                                LOG.info(child);
-                            }
+                (rc, path1, ctx, children) -> {
+                    LOG.info("Called back for path {} with return code {}", path1, rc);
+                    if (children == null) {
+                        LOG.info("Group {} does not exist", groupName);
+                    } else {
+                        if (children.isEmpty()) {
+                            LOG.info("No members in group {}", groupName);
+                            return;
                         }
-                        latch.countDown();
+                        for (String child : children) {
+                            LOG.info(child);
+                        }
                     }
+                    latch.countDown();
                 }, null /* optional context object */);
         LOG.info("Awaiting latch countdown...");
         latch.await();

@@ -8,7 +8,6 @@ import java.util.concurrent.Semaphore;
 
 import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
 import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
@@ -76,14 +75,11 @@ public class GroupMembershipIterable implements Iterable<List<String>> {
 
     private List<String> list(final String groupName) throws KeeperException, InterruptedException {
         String path = pathFor(groupName);
-        List<String> children = _zooKeeper.getChildren(path, new Watcher() {
-            @Override
-            public void process(WatchedEvent event) {
-                if (event.getType() == Event.EventType.NodeChildrenChanged) {
-                    _semaphore.release();
-                } else if (event.getType() == Event.EventType.NodeDeleted && event.getPath().equals(_groupPath)) {
-                    _semaphore.release();
-                }
+        List<String> children = _zooKeeper.getChildren(path, event -> {
+            if (event.getType() == Watcher.Event.EventType.NodeChildrenChanged) {
+                _semaphore.release();
+            } else if (event.getType() == Watcher.Event.EventType.NodeDeleted && event.getPath().equals(_groupPath)) {
+                _semaphore.release();
             }
         });
         Collections.sort(children);
