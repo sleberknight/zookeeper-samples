@@ -1,4 +1,4 @@
-/**
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +20,8 @@ package org.apache.zookeeper.recipes.lock;
 import org.apache.log4j.Logger;
 
 /**
+ * Copied directly from the ZooKeeper lock recipe, and modified slightly (e.g. for Sonar rule violations).
+ *
  * Represents an ephemeral znode name which has an ordered sequence number
  * and can be sorted in order
  *
@@ -63,9 +65,7 @@ class ZNodeName implements Comparable<ZNodeName> {
 
         ZNodeName sequence = (ZNodeName) o;
 
-        if (!name.equals(sequence.name)) return false;
-
-        return true;
+        return name.equals(sequence.name);
     }
 
     @Override

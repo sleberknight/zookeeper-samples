@@ -15,8 +15,8 @@ public class ConfigUpdater {
 
     public static final String PATH = MoreZKPaths.makeAbsolutePath("config");
 
-    private ActiveKeyValueStore store;
-    private Random random = new Random();
+    private final ActiveKeyValueStore store;
+    private final Random random = new Random();
 
     public ConfigUpdater(String hosts) throws IOException, InterruptedException {
         store = new ActiveKeyValueStore();

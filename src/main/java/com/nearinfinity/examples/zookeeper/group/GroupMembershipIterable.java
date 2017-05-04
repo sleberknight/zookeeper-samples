@@ -18,10 +18,10 @@ public class GroupMembershipIterable implements Iterable<List<String>> {
 
     private static final Logger LOG = LoggerFactory.getLogger(GroupMembershipIterable.class);
 
-    private ZooKeeper zooKeeper;
-    private String groupName;
-    private String groupPath;
-    private Semaphore semaphore = new Semaphore(1);
+    private final ZooKeeper zooKeeper;
+    private final String groupName;
+    private final String groupPath;
+    private final Semaphore semaphore = new Semaphore(1);
 
     public static void main(String[] args) throws IOException, InterruptedException {
         ZooKeeper zk = new ConnectionHelper().connect(args[0]);

@@ -17,10 +17,10 @@ public class BlockingWriteLock {
 
     private static final Logger LOG = LoggerFactory.getLogger(BlockingWriteLock.class);
 
-    private String name;
-    private String path;
-    private WriteLock writeLock;
-    private CountDownLatch lockAcquiredSignal = new CountDownLatch(1);
+    private final String name;
+    private final String path;
+    private final WriteLock writeLock;
+    private final CountDownLatch lockAcquiredSignal = new CountDownLatch(1);
 
     private static final List<ACL> DEFAULT_ACL = ZooDefs.Ids.OPEN_ACL_UNSAFE;
 

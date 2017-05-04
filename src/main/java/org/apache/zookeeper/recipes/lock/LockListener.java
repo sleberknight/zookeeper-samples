@@ -1,4 +1,4 @@
-/**
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -18,6 +18,8 @@
 package org.apache.zookeeper.recipes.lock;
 
 /**
+ * Copied directly from the ZooKeeper lock recipe, and modified slightly (e.g. for Sonar rule violations).
+ *
  * This class has two methods which are call
  * back methods when a lock is acquired and 
  * when the lock is released.
@@ -28,11 +30,11 @@ public interface LockListener {
      * call back called when the lock 
      * is acquired
      */
-    public void lockAcquired();
+    void lockAcquired();
     
     /**
      * call back called when the lock is 
      * released.
      */
-    public void lockReleased();
+    void lockReleased();
 }

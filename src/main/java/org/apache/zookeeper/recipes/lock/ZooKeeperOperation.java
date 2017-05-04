@@ -1,4 +1,4 @@
-/**
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +20,8 @@ package org.apache.zookeeper.recipes.lock;
 import org.apache.zookeeper.KeeperException;
 
 /**
+ * Copied directly from the ZooKeeper lock recipe, and modified slightly (e.g. for Sonar rule violations).
+ *
  * A callback object which can be used for implementing retry-able operations in the 
  * {@link org.apache.zookeeper.recipes.lock.ProtocolSupport} class
  *
@@ -31,8 +33,6 @@ public interface ZooKeeperOperation {
      * to ZooKeeper closes during this operation
      *
      * @return the result of the operation or null
-     * @throws KeeperException
-     * @throws InterruptedException
      */
-    public boolean execute() throws KeeperException, InterruptedException;
+    boolean execute() throws KeeperException, InterruptedException;
 }

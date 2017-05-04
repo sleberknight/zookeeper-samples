@@ -18,7 +18,7 @@ public class WorkerUsingWriteLockRecipe {
 
     private static final Logger LOG = LoggerFactory.getLogger(WorkerUsingWriteLockRecipe.class);
 
-    private static CountDownLatch workDoneSignal = new CountDownLatch(1);
+    private static final CountDownLatch workDoneSignal = new CountDownLatch(1);
 
     private WorkerUsingWriteLockRecipe() {
     }
@@ -46,23 +46,23 @@ public class WorkerUsingWriteLockRecipe {
 
     static class WorkerLockListener implements LockListener {
 
-        private String _workerName;
+        private final String workerName;
 
         WorkerLockListener(String workerName) {
-            _workerName = workerName;
+            this.workerName = workerName;
         }
 
         @Override
         public void lockAcquired() {
-            LOG.info("Lock acquired by {}", _workerName);
-            doSomeWork(_workerName);
-            LOG.info("{} is now done doing work", _workerName);
+            LOG.info("Lock acquired by {}", workerName);
+            doSomeWork(workerName);
+            LOG.info("{} is now done doing work", workerName);
             workDoneSignal.countDown();
         }
 
         @Override
         public void lockReleased() {
-            LOG.info("Lock released by {}", _workerName);
+            LOG.info("Lock released by {}", workerName);
         }
 
         private static void doSomeWork(String name) {

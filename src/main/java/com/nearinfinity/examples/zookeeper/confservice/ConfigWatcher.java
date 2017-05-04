@@ -12,7 +12,7 @@ public class ConfigWatcher implements Watcher {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigWatcher.class);
 
-    private ActiveKeyValueStore store;
+    private final ActiveKeyValueStore store;
 
     public ConfigWatcher(String hosts) throws InterruptedException, IOException {
         store = new ActiveKeyValueStore();

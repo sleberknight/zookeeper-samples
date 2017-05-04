@@ -19,9 +19,9 @@ public class LockWatcher implements Watcher {
 
     private static final Logger LOG = LoggerFactory.getLogger(LockWatcher.class);
 
-    private ZooKeeper zk;
-    private String lockPath;
-    private Semaphore semaphore = new Semaphore(1);
+    private final ZooKeeper zk;
+    private final String lockPath;
+    private final Semaphore semaphore = new Semaphore(1);
 
     public static void main(String[] args) throws IOException, InterruptedException, KeeperException {
         String hosts = args[0];

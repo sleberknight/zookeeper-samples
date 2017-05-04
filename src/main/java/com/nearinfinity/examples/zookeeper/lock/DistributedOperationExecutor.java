@@ -10,7 +10,7 @@ import org.apache.zookeeper.data.ACL;
 
 public class DistributedOperationExecutor {
 
-    private ZooKeeper zk;
+    private final ZooKeeper zk;
 
     public DistributedOperationExecutor(ZooKeeper zk) {
         this.zk = zk;

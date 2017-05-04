@@ -16,8 +16,8 @@ public class ListGroupForever {
 
     private static final Logger LOG = LoggerFactory.getLogger(ListGroupForever.class);
 
-    private ZooKeeper zooKeeper;
-    private Semaphore semaphore = new Semaphore(1);
+    private final ZooKeeper zooKeeper;
+    private final Semaphore semaphore = new Semaphore(1);
 
     public ListGroupForever(ZooKeeper zooKeeper) {
         this.zooKeeper = zooKeeper;

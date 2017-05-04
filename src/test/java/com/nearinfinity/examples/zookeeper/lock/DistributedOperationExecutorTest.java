@@ -135,7 +135,7 @@ public class DistributedOperationExecutorTest {
 
     static class TestDistOp implements DistributedOperation<Void> {
 
-        static AtomicInteger callCount = new AtomicInteger(0);
+        static final AtomicInteger callCount = new AtomicInteger(0);
 
         final String name;
         final AtomicBoolean executed;

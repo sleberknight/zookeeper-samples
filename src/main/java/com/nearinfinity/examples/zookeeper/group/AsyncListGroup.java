@@ -4,7 +4,6 @@ import java.util.concurrent.CountDownLatch;
 
 import com.nearinfinity.examples.zookeeper.util.ConnectionWatcher;
 import com.nearinfinity.examples.zookeeper.util.MoreZKPaths;
-import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +18,7 @@ public class AsyncListGroup extends ConnectionWatcher {
         asyncListGroup.close();
     }
 
-    public void list(final String groupName) throws KeeperException, InterruptedException {
+    public void list(final String groupName) throws InterruptedException {
         String path = MoreZKPaths.makeAbsolutePath(groupName);
 
         // In real code, you would not use the async API the way it's being used here. You would
