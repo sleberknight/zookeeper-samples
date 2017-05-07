@@ -21,19 +21,19 @@ import org.apache.zookeeper.server.persistence.FileTxnSnapLog;
  */
 public final class EmbeddedZooKeeperServer {
 
-    private int _port;
-    private String _dataDirectoryName;
-    private boolean _manageDataDir;
-    private int _tickTime;
-    private NIOServerCnxnFactory _cnxnFactory;
+    private int port;
+    private String dataDirectoryName;
+    private boolean manageDataDir;
+    private int tickTime;
+    private NIOServerCnxnFactory cnxnFactory;
 
     public static final int MAX_CLIENT_CONNECTIONS = 60;
     public static final int DEFAULT_TICK_TIME = 2000;
 
     public EmbeddedZooKeeperServer(int port) {
         Random random = new Random(System.currentTimeMillis());
-        this._dataDirectoryName = System.getProperty("java.io.tmpdir") + "zookeeper-data-" + random.nextInt();
-        init(port, _dataDirectoryName, true, DEFAULT_TICK_TIME);
+        this.dataDirectoryName = System.getProperty("java.io.tmpdir") + "zookeeper-data-" + random.nextInt();
+        init(port, dataDirectoryName, true, DEFAULT_TICK_TIME);
     }
 
     public EmbeddedZooKeeperServer(int port, String dataDirectoryName, int tickTime) {
@@ -42,28 +42,28 @@ public final class EmbeddedZooKeeperServer {
 
     public void start() throws IOException, InterruptedException {
         ZooKeeperServer zkServer = new ZooKeeperServer();
-        File dataDirectory = new File(_dataDirectoryName);
+        File dataDirectory = new File(dataDirectoryName);
         FileTxnSnapLog ftxn = new FileTxnSnapLog(dataDirectory, dataDirectory);
         zkServer.setTxnLogFactory(ftxn);
-        zkServer.setTickTime(_tickTime);
-        _cnxnFactory = new NIOServerCnxnFactory();
-        _cnxnFactory.configure(new InetSocketAddress(_port), MAX_CLIENT_CONNECTIONS);
-        _cnxnFactory.startup(zkServer);
+        zkServer.setTickTime(tickTime);
+        cnxnFactory = new NIOServerCnxnFactory();
+        cnxnFactory.configure(new InetSocketAddress(port), MAX_CLIENT_CONNECTIONS);
+        cnxnFactory.startup(zkServer);
     }
 
     public void shutdown() {
-        if (_cnxnFactory != null) {
-            _cnxnFactory.shutdown();
+        if (cnxnFactory != null) {
+            cnxnFactory.shutdown();
         }
-        removeDataDirectoryIfNecessary(_dataDirectoryName, _manageDataDir);
+        removeDataDirectoryIfNecessary(dataDirectoryName, manageDataDir);
     }
 
     private void init(int port, String dataDirectoryName, boolean manageDataDir, int tickTime) {
-        this._port = port;
-        this._dataDirectoryName = dataDirectoryName;
-        this._manageDataDir = manageDataDir;
+        this.port = port;
+        this.dataDirectoryName = dataDirectoryName;
+        this.manageDataDir = manageDataDir;
         createDataDirectoryIfNecessary(dataDirectoryName, manageDataDir);
-        this._tickTime = tickTime;
+        this.tickTime = tickTime;
     }
 
     private void createDataDirectoryIfNecessary(String dataDirectoryName, boolean manageDataDir) {

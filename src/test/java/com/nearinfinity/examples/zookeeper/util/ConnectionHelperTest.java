@@ -20,11 +20,11 @@ public class ConnectionHelperTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionHelperTest.class);
 
-    private ConnectionHelper _connectionHelper;
-    private ZooKeeper _zooKeeper;
+    private ConnectionHelper connectionHelper;
+    private ZooKeeper zooKeeper;
 
-    private static EmbeddedZooKeeperServer _embeddedServer;
-    private static File _dataDirectory;
+    private static EmbeddedZooKeeperServer embeddedServer;
+    private static File dataDirectory;
 
     private static final int ZK_PORT = 53181;
     private static final String ZK_CONNECTION_STRING = "localhost:" + ZK_PORT;
@@ -32,44 +32,44 @@ public class ConnectionHelperTest {
     @BeforeClass
     public static void beforeAll() throws IOException, InterruptedException {
         String dataDirectoryName = "target/zookeeper-data";
-        _dataDirectory = new File(dataDirectoryName);
+        dataDirectory = new File(dataDirectoryName);
         deleteDataDirectoryIfExists();
 
-        _embeddedServer = new EmbeddedZooKeeperServer(ZK_PORT, dataDirectoryName, 2000);
-        _embeddedServer.start();
+        embeddedServer = new EmbeddedZooKeeperServer(ZK_PORT, dataDirectoryName, 2000);
+        embeddedServer.start();
     }
 
     @AfterClass
     public static void afterAll() throws IOException {
-        _embeddedServer.shutdown();
+        embeddedServer.shutdown();
         deleteDataDirectoryIfExists();
     }
 
     private static void deleteDataDirectoryIfExists() throws IOException {
-        if (_dataDirectory.exists()) {
-            FileUtils.deleteDirectory(_dataDirectory);
+        if (dataDirectory.exists()) {
+            FileUtils.deleteDirectory(dataDirectory);
         }
     }
 
     @Before
     public void setUp() throws InterruptedException {
-        _connectionHelper = new ConnectionHelper();
+        connectionHelper = new ConnectionHelper();
     }
 
     @After
     public void tearDown() throws InterruptedException {
-        if (_zooKeeper != null) {
-            LOG.info("Closing zooKeeper with session id: {}", _zooKeeper.getSessionId());
-            _zooKeeper.close();
-            _zooKeeper = null;
+        if (zooKeeper != null) {
+            LOG.info("Closing zooKeeper with session id: {}", zooKeeper.getSessionId());
+            zooKeeper.close();
+            zooKeeper = null;
         }
     }
 
     @Test
     public void testConnect() throws Exception {
-        _zooKeeper = _connectionHelper.connect(ZK_CONNECTION_STRING);
-        assertThat(_zooKeeper.getState(), is(ZooKeeper.States.CONNECTED));
-        assertThat(_zooKeeper.getSessionTimeout(), is(ConnectionHelper.DEFAULT_SESSION_TIMEOUT));
+        zooKeeper = connectionHelper.connect(ZK_CONNECTION_STRING);
+        assertThat(zooKeeper.getState(), is(ZooKeeper.States.CONNECTED));
+        assertThat(zooKeeper.getSessionTimeout(), is(ConnectionHelper.DEFAULT_SESSION_TIMEOUT));
     }
 
 }
