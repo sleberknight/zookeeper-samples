@@ -1,3 +1,9 @@
 This is code that accompanies a talk I gave on Apache ZooKeeper.
 
 The slides can be found at http://www.slideshare.net/scottleber/apache-zookeeper
+
+May 2017 Update:
+* Updated ZooKeeper version to 3.4.10
+* Updated Curator version to 2.12.0
+* Changed all System.out to SLFJ Loggers
+* A bunch of misc. code cleanup, e.g. converting anonymous inner classes to lambdas, using diamond operator, etc.
