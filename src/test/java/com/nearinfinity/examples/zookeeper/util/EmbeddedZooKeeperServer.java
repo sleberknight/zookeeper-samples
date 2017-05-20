@@ -9,17 +9,21 @@ import org.apache.commons.io.FileUtils;
 import org.apache.zookeeper.server.NIOServerCnxnFactory;
 import org.apache.zookeeper.server.ZooKeeperServer;
 import org.apache.zookeeper.server.persistence.FileTxnSnapLog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Mimics what {@link org.apache.zookeeper.server.ZooKeeperServerMain} does, but provides a way to shut it down for
  * unit/integration testing purposes.
- *
+ * <p>
  * TODO After upgrading to ZK 3.4.5 the tests execute slower, sometimes much slower and it looks like, from the logs,
- *      there are a bunch of issues related to disconnects and reconnect attempts. Not sure why.
- * 
+ * there are a bunch of issues related to disconnects and reconnect attempts. Not sure why.
+ * <p>
  * TODO Better idea: replace this with Curator's TestingServer.
  */
 public final class EmbeddedZooKeeperServer {
+
+    private static final Logger LOG = LoggerFactory.getLogger(EmbeddedZooKeeperServer.class);
 
     private int port;
     private String dataDirectoryName;
@@ -83,9 +87,8 @@ public final class EmbeddedZooKeeperServer {
             File dataDir = new File(dataDirectoryName);
             try {
                 FileUtils.deleteDirectory(dataDir);
-            }
-            catch (IOException e) {
-                System.err.println(String.format("dataDir %s could not be removed", dataDirectoryName));
+            } catch (IOException e) {
+                LOG.error("dataDir {} could not be removed", dataDirectoryName, e);
             }
         }
     }

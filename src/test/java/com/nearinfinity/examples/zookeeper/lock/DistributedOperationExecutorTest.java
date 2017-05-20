@@ -8,15 +8,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.nearinfinity.examples.zookeeper.junit4.CuratorTestServerRule;
 import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
-import com.nearinfinity.examples.zookeeper.util.EmbeddedZooKeeperServer;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -25,24 +24,15 @@ import static org.junit.Assert.assertThat;
 
 public class DistributedOperationExecutorTest {
 
-    private static EmbeddedZooKeeperServer embeddedServer;
-    private ZooKeeper zooKeeper;
-    private String testLockPath;
-    private DistributedOperationExecutor executor;
-
     private static final int ZK_PORT = 53181;
     private static final String ZK_CONNECTION_STRING = "localhost:" + ZK_PORT;
 
-    @BeforeClass
-    public static void beforeAll() throws IOException, InterruptedException {
-        embeddedServer = new EmbeddedZooKeeperServer(ZK_PORT);
-        embeddedServer.start();
-    }
+    @ClassRule
+    public static final CuratorTestServerRule ZK_TEST_SERVER = new CuratorTestServerRule(ZK_PORT);
 
-    @AfterClass
-    public static void afterAll() {
-        embeddedServer.shutdown();
-    }
+    private ZooKeeper zooKeeper;
+    private String testLockPath;
+    private DistributedOperationExecutor executor;
 
     @Before
     public void setUp() throws IOException, InterruptedException {
