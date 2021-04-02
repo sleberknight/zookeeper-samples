@@ -15,24 +15,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+// NOTE:
+// Copied directly from the ZooKeeper lock recipe, and suppressed all warnings
+// https://github.com/apache/zookeeper/blob/cdddda4c55acf29d4e0b2bc8f3de7b5c676e8ffc/zookeeper-recipes/zookeeper-recipes-lock/src/main/java/org/apache/zookeeper/recipes/lock/ZooKeeperOperation.java
+
 package org.apache.zookeeper.recipes.lock;
 
 import org.apache.zookeeper.KeeperException;
 
 /**
- * Copied directly from the ZooKeeper lock recipe, and modified slightly (e.g. for Sonar rule violations).
- *
- * A callback object which can be used for implementing retry-able operations in the 
- * {@link org.apache.zookeeper.recipes.lock.ProtocolSupport} class
- *
+ * A callback object which can be used for implementing retry-able operations in the
+ * {@link org.apache.zookeeper.recipes.lock.ProtocolSupport} class.
  */
+@SuppressWarnings("ALL")
 public interface ZooKeeperOperation {
-    
+
     /**
      * Performs the operation - which may be involved multiple times if the connection
-     * to ZooKeeper closes during this operation
+     * to ZooKeeper closes during this operation.
      *
      * @return the result of the operation or null
+     * @throws KeeperException
+     * @throws InterruptedException
      */
     boolean execute() throws KeeperException, InterruptedException;
+
 }

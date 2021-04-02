@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.zookeeper.recipes.lock;
 
 import java.util.List;
@@ -29,24 +30,25 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static java.util.Objects.isNull;
+// NOTE:
+// Copied directly from the ZooKeeper lock recipe, and suppressed all warnings
+// https://github.com/apache/zookeeper/blob/cdddda4c55acf29d4e0b2bc8f3de7b5c676e8ffc/zookeeper-recipes/zookeeper-recipes-lock/src/main/java/org/apache/zookeeper/recipes/lock/ProtocolSupport.java
 
 /**
- * Copied directly from the ZooKeeper lock recipe, and modified slightly (e.g. for Sonar rule violations).
- *
- * A base class for protocol implementations which provides a number of higher 
+ * A base class for protocol implementations which provides a number of higher
  * level helper methods for working with ZooKeeper along with retrying synchronous
- *  operations if the connection to ZooKeeper closes such as 
- *  {@link #retryOperation(ZooKeeperOperation)}
- *
+ * operations if the connection to ZooKeeper closes such as
+ * {@link #retryOperation(ZooKeeperOperation)}.
  */
+@SuppressWarnings({"ALL", "java:S1186", "java:S2139", "java:S2259", "java:S2142"})
 class ProtocolSupport {
+
     private static final Logger LOG = LoggerFactory.getLogger(ProtocolSupport.class);
+    private static final int RETRY_COUNT = 10;
 
     protected final ZooKeeper zookeeper;
-    private final AtomicBoolean closed = new AtomicBoolean(false);
+    private AtomicBoolean closed = new AtomicBoolean(false);
     private long retryDelay = 500L;
-    private int retryCount = 10;
     private List<ACL> acl = ZooDefs.Ids.OPEN_ACL_UNSAFE;
 
     public ProtocolSupport(ZooKeeper zookeeper) {
@@ -55,16 +57,17 @@ class ProtocolSupport {
 
     /**
      * Closes this strategy and releases any ZooKeeper resources; but keeps the
-     *  ZooKeeper instance open
+     *  ZooKeeper instance open.
      */
     public void close() {
         if (closed.compareAndSet(false, true)) {
             doClose();
         }
     }
-    
+
     /**
-     * return zookeeper client instance
+     * return zookeeper client instance.
+     *
      * @return zookeeper client instance
      */
     public ZooKeeper getZookeeper() {
@@ -72,7 +75,8 @@ class ProtocolSupport {
     }
 
     /**
-     * return the acl its using
+     * return the acl its using.
+     *
      * @return the acl.
      */
     public List<ACL> getAcl() {
@@ -80,7 +84,8 @@ class ProtocolSupport {
     }
 
     /**
-     * set the acl 
+     * set the acl.
+     *
      * @param acl the acl to set to
      */
     public void setAcl(List<ACL> acl) {
@@ -88,7 +93,8 @@ class ProtocolSupport {
     }
 
     /**
-     * get the retry delay in milliseconds
+     * get the retry delay in milliseconds.
+     *
      * @return the retry delay
      */
     public long getRetryDelay() {
@@ -96,7 +102,8 @@ class ProtocolSupport {
     }
 
     /**
-     * Sets the time waited between retry delays
+     * Sets the time waited between retry delays.
+     *
      * @param retryDelay the retry delay
      */
     public void setRetryDelay(long retryDelay) {
@@ -105,55 +112,61 @@ class ProtocolSupport {
 
     /**
      * Allow derived classes to perform
-     * some custom closing operations to release resources
+     * some custom closing operations to release resources.
      */
     protected void doClose() {
-        // no-op
+
     }
 
-
     /**
-     * Perform the given operation, retrying if the connection fails
-     * @return object. it needs to be cast to the callee's expected 
+     * Perform the given operation, retrying if the connection fails.
+     *
+     * @return object. it needs to be cast to the callee's expected
      * return type.
      */
     protected Object retryOperation(ZooKeeperOperation operation)
         throws KeeperException, InterruptedException {
         KeeperException exception = null;
-        for (int i = 0; i < retryCount; i++) {
+        for (int i = 0; i < RETRY_COUNT; i++) {
             try {
                 return operation.execute();
             } catch (KeeperException.SessionExpiredException e) {
-                LOG.warn("Session expired for: {} so reconnecting", zookeeper, e);
+                LOG.warn("Session expired {}. Reconnecting...", zookeeper, e);
                 throw e;
             } catch (KeeperException.ConnectionLossException e) {
                 if (exception == null) {
                     exception = e;
                 }
-                LOG.debug("Attempt {} failed with connection loss so attempting to reconnect", i, e);
+                LOG.debug("Attempt {} failed with connection loss. Reconnecting...", i);
                 retryDelay(i);
             }
         }
 
-        if (isNull(exception)) {
-            throw new IllegalStateException("The KeeperException was (unexpectedly) null; cannot throw it!");
-        }
         throw exception;
     }
 
     /**
      * Ensures that the given path exists with no data, the current
-     * ACL and no flags
+     * ACL and no flags.
+     *
+     * @param path
      */
     protected void ensurePathExists(String path) {
         ensureExists(path, null, acl, CreateMode.PERSISTENT);
     }
 
     /**
-     * Ensures that the given path exists with the given data, ACL and flags
+     * Ensures that the given path exists with the given data, ACL and flags.
+     *
+     * @param path
+     * @param acl
+     * @param flags
      */
-    protected void ensureExists(final String path, final byte[] data,
-            final List<ACL> acl, final CreateMode flags) {
+    protected void ensureExists(
+            final String path,
+            final byte[] data,
+            final List<ACL> acl,
+            final CreateMode flags) {
         try {
             retryOperation(() -> {
                 Stat stat = zookeeper.exists(path, false);
@@ -163,16 +176,14 @@ class ProtocolSupport {
                 zookeeper.create(path, data, acl, flags);
                 return true;
             });
-        } catch (KeeperException e) {
-            LOG.warn("Caught KeeperException: {}", e.code(), e);
-        } catch (InterruptedException e) {
-            LOG.warn("Interrupted", e);
-            Thread.currentThread().interrupt();
+        } catch (KeeperException | InterruptedException e) {
+            LOG.warn("Unexpected exception", e);
         }
     }
 
     /**
-     * Returns true if this protocol has been closed
+     * Returns true if this protocol has been closed.
+     *
      * @return true if this protocol is closed
      */
     protected boolean isClosed() {
@@ -180,7 +191,8 @@ class ProtocolSupport {
     }
 
     /**
-     * Performs a retry delay if this is not the first attempt
+     * Performs a retry delay if this is not the first attempt.
+     *
      * @param attemptCount the number of the attempts performed so far
      */
     protected void retryDelay(int attemptCount) {
@@ -188,9 +200,9 @@ class ProtocolSupport {
             try {
                 Thread.sleep(attemptCount * retryDelay);
             } catch (InterruptedException e) {
-                LOG.debug("Failed to sleep", e);
-                Thread.currentThread().interrupt();
+                LOG.warn("Failed to sleep.", e);
             }
         }
     }
+
 }

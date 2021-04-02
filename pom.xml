@@ -14,17 +14,12 @@
         <slf4j.verison>1.7.6</slf4j.verison>
         <curator.version>2.12.0</curator.version>
         <zk.version>3.4.14</zk.version>
-    </properties>
 
-    <!--
-        <repositories>
-            <repository>
-                <id>repository.jboss.org-public</id>
-                <name>JBoss.org Maven repository</name>
-                <url>https://repository.jboss.org/nexus/content/groups/public</url>
-            </repository>
-        </repositories>
-    -->
+        <!-- Build properties -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    </properties>
 
     <dependencies>
 
