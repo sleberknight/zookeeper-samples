@@ -24,9 +24,6 @@ public class BlockingWriteLockTest {
     @ClassRule
     public static final CuratorTestServerRule ZK_TEST_SERVER = new CuratorTestServerRule(ZK_PORT);
 
-//    @ClassRule
-//    public static final EmbeddedZooKeeperServerRule ZK_TEST_SERVER = new EmbeddedZooKeeperServerRule(ZK_PORT);
-
     private ZooKeeper zooKeeper;
     private String testLockPath;
     private BlockingWriteLock writeLock;

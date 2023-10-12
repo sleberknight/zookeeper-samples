@@ -1,6 +1,6 @@
 package com.nearinfinity.examples.zookeeper.util;
 
-import com.nearinfinity.examples.zookeeper.junit4.EmbeddedZooKeeperServerRule;
+import com.nearinfinity.examples.zookeeper.junit4.CuratorTestServerRule;
 import org.apache.zookeeper.ZooKeeper;
 import org.junit.After;
 import org.junit.Before;
@@ -16,13 +16,11 @@ public class ConnectionHelperTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionHelperTest.class);
 
-    private static final String DATA_DIRECTORY_NAME = "target/zookeeper-data";
     private static final int ZK_PORT = 53181;
     private static final String ZK_CONNECTION_STRING = "localhost:" + ZK_PORT;
 
     @ClassRule
-    public static final EmbeddedZooKeeperServerRule ZK_TEST_SERVER =
-            new EmbeddedZooKeeperServerRule(ZK_PORT, DATA_DIRECTORY_NAME);
+    public static final CuratorTestServerRule ZK_TEST_SERVER = new CuratorTestServerRule(ZK_PORT);
 
     private ConnectionHelper connectionHelper;
     private ZooKeeper zooKeeper;
