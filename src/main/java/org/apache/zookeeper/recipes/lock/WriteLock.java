@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
@@ -212,9 +211,6 @@ public class WriteLock extends ProtocolSupport {
          *
          * @return if the command was successful or not
          */
-        @SuppressFBWarnings(
-                value = "NP_NULL_PARAM_DEREF_NONVIRTUAL",
-                justification = "findPrefixInChildren will assign a value to this.id")
         public boolean execute() throws KeeperException, InterruptedException {
             do {
                 if (id == null) {
