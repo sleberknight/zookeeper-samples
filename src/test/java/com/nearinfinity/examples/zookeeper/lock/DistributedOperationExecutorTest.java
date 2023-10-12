@@ -18,9 +18,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class DistributedOperationExecutorTest {
 
@@ -56,7 +54,7 @@ public class DistributedOperationExecutorTest {
 
     @Test
     public void testWithLock() throws InterruptedException, KeeperException {
-        assertThat(zooKeeper.exists(testLockPath, false), is(nullValue()));
+        assertThat(zooKeeper.exists(testLockPath, false)).isNull();
         executor.withLock("Test Lock", testLockPath, () -> {
             assertNumberOfChildren(zooKeeper, testLockPath, 1);
             return null;
@@ -66,27 +64,27 @@ public class DistributedOperationExecutorTest {
 
     @Test
     public void testWithLockHavingSpecifiedTimeout() throws InterruptedException, KeeperException {
-        assertThat(zooKeeper.exists(testLockPath, false), is(nullValue()));
+        assertThat(zooKeeper.exists(testLockPath, false)).isNull();
         final String opResult = "success";
         DistributedOperationResult<String> result = executor.withLock("Test Lock w/Timeout", testLockPath,
                 () -> opResult, 10, TimeUnit.SECONDS);
-        assertThat(result.timedOut, is(false));
-        assertThat(result.result, is(opResult));
+        assertThat(result.timedOut).isFalse();
+        assertThat(result.result).isEqualTo(opResult);
     }
 
     @Test
     public void testWithLockHavingACLAndHavingSpecifiedTimeout() throws InterruptedException, KeeperException {
-        assertThat(zooKeeper.exists(testLockPath, false), is(nullValue()));
+        assertThat(zooKeeper.exists(testLockPath, false)).isNull();
         final String opResult = "success";
         DistributedOperationResult<String> result = executor.withLock("Test Lock w/Timeout", testLockPath, ZooDefs.Ids.OPEN_ACL_UNSAFE,
                 () -> opResult, 10, TimeUnit.SECONDS);
-        assertThat(result.timedOut, is(false));
-        assertThat(result.result, is(opResult));
+                assertThat(result.timedOut).isFalse();
+                assertThat(result.result).isEqualTo(opResult);
     }
 
     @Test
     public void testWithLockForMultipleLocksInDifferentThreads() throws InterruptedException, KeeperException {
-        assertThat(zooKeeper.exists(testLockPath, false), is(nullValue()));
+        assertThat(zooKeeper.exists(testLockPath, false)).isNull();
         List<TestDistOp> ops = Arrays.asList(
                 new TestDistOp("op-1"),
                 new TestDistOp("op-2"),
@@ -105,9 +103,9 @@ public class DistributedOperationExecutorTest {
             opThread.join(maxWaitTimeMillis);
         }
 
-        assertThat(TestDistOp.callCount.get(), is(ops.size()));
+        assertThat(TestDistOp.callCount).hasValue(ops.size());
         for (TestDistOp op : ops) {
-            assertThat(op.executed.get(), is(true));
+            assertThat(op.executed).isTrue();
         }
     }
 
@@ -150,6 +148,6 @@ public class DistributedOperationExecutorTest {
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
-        assertThat(children.size(), is(expectedNumber));
+        assertThat(children).hasSize(expectedNumber);
     }
 }

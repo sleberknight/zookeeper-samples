@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.nearinfinity.examples.zookeeper.junit4.CuratorTestServerRule;
 import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
 import org.apache.zookeeper.KeeperException;
@@ -12,9 +14,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 public class BlockingWriteLockTest {
 
@@ -53,13 +52,13 @@ public class BlockingWriteLockTest {
     @Test
     public void testLockWithTimeout() throws InterruptedException, KeeperException {
         boolean obtainedLock = writeLock.lock(10, TimeUnit.SECONDS);
-        assertThat(obtainedLock, is(true));
+        assertThat(obtainedLock).isTrue();
     }
 
     @Test
     public void testTryLock() throws InterruptedException, KeeperException {
         boolean obtainedLock = writeLock.tryLock();
-        assertThat(obtainedLock, is(true));
+        assertThat(obtainedLock).isTrue();
     }
 
     @Test
@@ -72,6 +71,6 @@ public class BlockingWriteLockTest {
     private void assertNumberOfChildren(ZooKeeper zk, String path, int expectedNumber)
             throws InterruptedException, KeeperException {
         List<String> children = zk.getChildren(path, false);
-        assertThat(children.size(), is(expectedNumber));
+        assertThat(children).hasSize(expectedNumber);
     }
 }
