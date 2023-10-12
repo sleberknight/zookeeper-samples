@@ -13,6 +13,6 @@ October 2023 update:
 * Update Curator version to 5.5.0
 * Update SLF4J version to 2.0.9 and remove SLF4J to Log4J bridge
 * Update to use JDK 17
-* Update to use JUnit Jupiter though using vintage test runner, since tests are still JUnit 4
 * Update plugins and several other dependencies, clean up the POM, etc.
+* Switch to use JUnit 5 (Jupiter) and AssertJ assertions
 * Remove test support classes EmbeddedZooKeeperServer and EmbeddedZooKeeperServerRule; they cause the tests to hang, and it's better to use Curator's testing server anyway
