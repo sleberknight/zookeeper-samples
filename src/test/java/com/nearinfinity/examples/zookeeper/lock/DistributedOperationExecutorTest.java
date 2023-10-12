@@ -8,39 +8,39 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.nearinfinity.examples.zookeeper.junit4.CuratorTestServerRule;
+import com.nearinfinity.examples.zookeeper.junit.jupiter.CuratorTestServerExtension;
 import com.nearinfinity.examples.zookeeper.util.ConnectionHelper;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class DistributedOperationExecutorTest {
+class DistributedOperationExecutorTest {
 
     private static final int ZK_PORT = 53181;
     private static final String ZK_CONNECTION_STRING = "localhost:" + ZK_PORT;
 
-    @ClassRule
-    public static final CuratorTestServerRule ZK_TEST_SERVER = new CuratorTestServerRule(ZK_PORT);
+    @RegisterExtension
+    static final CuratorTestServerExtension ZK_TEST_SERVER = new CuratorTestServerExtension(ZK_PORT);
 
     private ZooKeeper zooKeeper;
     private String testLockPath;
     private DistributedOperationExecutor executor;
 
-    @Before
-    public void setUp() throws IOException, InterruptedException {
+    @BeforeEach
+    void setUp() throws IOException, InterruptedException {
         zooKeeper = new ConnectionHelper().connect(ZK_CONNECTION_STRING);
         testLockPath = "/test-write-lock-" + System.currentTimeMillis();
         executor = new DistributedOperationExecutor(zooKeeper);
     }
 
-    @After
-    public void tearDown() throws InterruptedException, KeeperException {
+    @AfterEach
+    void tearDown() throws InterruptedException, KeeperException {
         if (zooKeeper.exists(testLockPath, false) == null) {
             return;
         }
@@ -53,7 +53,7 @@ public class DistributedOperationExecutorTest {
     }
 
     @Test
-    public void testWithLock() throws InterruptedException, KeeperException {
+    void testWithLock() throws InterruptedException, KeeperException {
         assertThat(zooKeeper.exists(testLockPath, false)).isNull();
         executor.withLock("Test Lock", testLockPath, () -> {
             assertNumberOfChildren(zooKeeper, testLockPath, 1);
@@ -63,7 +63,7 @@ public class DistributedOperationExecutorTest {
     }
 
     @Test
-    public void testWithLockHavingSpecifiedTimeout() throws InterruptedException, KeeperException {
+    void testWithLockHavingSpecifiedTimeout() throws InterruptedException, KeeperException {
         assertThat(zooKeeper.exists(testLockPath, false)).isNull();
         final String opResult = "success";
         DistributedOperationResult<String> result = executor.withLock("Test Lock w/Timeout", testLockPath,
@@ -73,7 +73,7 @@ public class DistributedOperationExecutorTest {
     }
 
     @Test
-    public void testWithLockHavingACLAndHavingSpecifiedTimeout() throws InterruptedException, KeeperException {
+    void testWithLockHavingACLAndHavingSpecifiedTimeout() throws InterruptedException, KeeperException {
         assertThat(zooKeeper.exists(testLockPath, false)).isNull();
         final String opResult = "success";
         DistributedOperationResult<String> result = executor.withLock("Test Lock w/Timeout", testLockPath, ZooDefs.Ids.OPEN_ACL_UNSAFE,
@@ -83,7 +83,7 @@ public class DistributedOperationExecutorTest {
     }
 
     @Test
-    public void testWithLockForMultipleLocksInDifferentThreads() throws InterruptedException, KeeperException {
+    void testWithLockForMultipleLocksInDifferentThreads() throws InterruptedException, KeeperException {
         assertThat(zooKeeper.exists(testLockPath, false)).isNull();
         List<TestDistOp> ops = Arrays.asList(
                 new TestDistOp("op-1"),
