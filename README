@@ -7,3 +7,12 @@ May 2017 Update:
 * Updated Curator version to 2.12.0
 * Changed all System.out to SLFJ Loggers
 * A bunch of misc. code cleanup, e.g. converting anonymous inner classes to lambdas, using diamond operator, etc.
+
+October 2023 update:
+* Update Zookeeper version to 3.9.1
+* Update Curator version to 5.5.0
+* Update SLF4J version to 2.0.9 and remove SLF4J to Log4J bridge
+* Update to use JDK 17
+* Update to use JUnit Jupiter though using vintage test runner, since tests are still JUnit 4
+* Update plugins and several other dependencies, clean up the POM, etc.
+* Remove test support classes EmbeddedZooKeeperServer and EmbeddedZooKeeperServerRule; they cause the tests to hang, and it's better to use Curator's testing server anyway
