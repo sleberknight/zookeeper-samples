@@ -18,6 +18,7 @@
         <zk.version>3.9.1</zk.version>
 
         <!-- test dependency versions -->
+        <assertj.version>3.24.2</assertj.version>
         <commons-io.version>2.14.0</commons-io.version>
         <junit.jupiter.version>5.10.0</junit.jupiter.version>
 
@@ -103,6 +104,13 @@
         </dependency>
 
         <!-- Test dependencies -->
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj.version}</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>

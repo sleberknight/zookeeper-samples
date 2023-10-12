@@ -9,8 +9,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ConnectionHelperTest {
 
@@ -42,8 +41,8 @@ public class ConnectionHelperTest {
     @Test
     public void testConnect() throws Exception {
         zooKeeper = connectionHelper.connect(ZK_CONNECTION_STRING);
-        assertThat(zooKeeper.getState(), is(ZooKeeper.States.CONNECTED));
-        assertThat(zooKeeper.getSessionTimeout(), is(ConnectionHelper.DEFAULT_SESSION_TIMEOUT));
+        assertThat(zooKeeper.getState()).isEqualTo(ZooKeeper.States.CONNECTED);
+        assertThat(zooKeeper.getSessionTimeout()).isEqualTo(ConnectionHelper.DEFAULT_SESSION_TIMEOUT);
     }
 
 }
