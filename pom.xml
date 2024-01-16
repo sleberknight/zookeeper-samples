@@ -14,7 +14,7 @@
         <curator.version>5.6.0</curator.version>
         <logback-classic.version>1.4.14</logback-classic.version>
         <logback-core.version>1.4.14</logback-core.version>
-        <slf4j.verison>2.0.10</slf4j.verison>
+        <slf4j.verison>2.0.11</slf4j.verison>
         <zk.version>3.9.1</zk.version>
 
         <!-- test dependency versions -->
