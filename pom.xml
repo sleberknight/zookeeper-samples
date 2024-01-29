@@ -18,7 +18,7 @@
         <zk.version>3.9.1</zk.version>
 
         <!-- test dependency versions -->
-        <assertj.version>3.25.1</assertj.version>
+        <assertj.version>3.25.2</assertj.version>
         <commons-io.version>2.15.1</commons-io.version>
         <junit.jupiter.version>5.10.1</junit.jupiter.version>
 
