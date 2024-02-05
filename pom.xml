@@ -20,7 +20,7 @@
         <!-- test dependency versions -->
         <assertj.version>3.25.2</assertj.version>
         <commons-io.version>2.15.1</commons-io.version>
-        <junit.jupiter.version>5.10.1</junit.jupiter.version>
+        <junit.jupiter.version>5.10.2</junit.jupiter.version>
 
         <!-- plugin versions -->
         <maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
