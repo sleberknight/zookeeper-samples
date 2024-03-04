@@ -13,7 +13,7 @@
         <!-- required dependency versions -->
         <curator.version>5.6.0</curator.version>
         <logback-classic.version>1.5.0</logback-classic.version>
-        <logback-core.version>1.5.0</logback-core.version>
+        <logback-core.version>1.5.2</logback-core.version>
         <slf4j.verison>2.0.12</slf4j.verison>
         <zk.version>3.9.1</zk.version>
 
