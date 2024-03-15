@@ -13,3 +13,11 @@ updates:
       - "sleberknight"
     reviewers:
       - "sleberknight"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    assignees:
+      - "sleberknight"
+    reviewers:
+      - "sleberknight"
