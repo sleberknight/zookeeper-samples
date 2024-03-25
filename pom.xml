@@ -23,7 +23,7 @@
         <junit.jupiter.version>5.10.2</junit.jupiter.version>
 
         <!-- plugin versions -->
-        <maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <maven-enforcer-plugin.version>3.4.1</maven-enforcer-plugin.version>
         <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
         <maven-dependency-plugin.version>3.6.1</maven-dependency-plugin.version>
