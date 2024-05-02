@@ -1,3 +1,5 @@
+**This is now archived, since the presentation was back in 2012 and the code hasn't really changed, and doesn't need to.**
+
 This is code that accompanies a talk I gave on Apache ZooKeeper.
 
 The slides can be found at http://www.slideshare.net/scottleber/apache-zookeeper
